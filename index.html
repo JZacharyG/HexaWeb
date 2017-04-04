@@ -28,33 +28,34 @@
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>
 
-pieces = [
+var pieces = [
 	{r:-2, q:0, type:0, offset:0},
-	{r:-2, q:1, type:1, offset:0},
-	{r:-2, q:2, type:2, offset:0},
-	{r:-1, q:-1, type:3, offset:0},
-	{r:-1, q:0, type:4, offset:0},
-	{r:-1, q:1, type:5, offset:0},
-	{r:-1, q:2, type:6, offset:0},
-	{r:0, q:-2, type:7, offset:0},
-	{r:0, q:-1, type:8, offset:0},
-	{r:0, q:0, type:9, offset:0},
+	{r:-2, q:1, type:5, offset:3},
+	{r:-2, q:2, type:2, offset:3},
+	{r:-1, q:-1, type:1, offset:1},
+	{r:-1, q:0, type:7, offset:1},
+	{r:-1, q:1, type:0, offset:2},
+	{r:-1, q:2, type:6, offset:4},
+	{r:0, q:-2, type:0, offset:1},
+	{r:0, q:-1, type:9, offset:2},
+	{r:0, q:0, type:11, offset:0},
 	{r:0, q:1, type:10, offset:0},
-	{r:0, q:2, type:11, offset:0},
-	{r:1, q:-2, type:12, offset:0},
-	{r:1, q:-1, type:13, offset:0},
-	{r:1, q:0, type:14, offset:0},
-	{r:1, q:1, type:15, offset:0},
-	{r:2, q:-2, type:16, offset:0},
-	{r:2, q:-1, type:17, offset:0},
-	{r:2, q:0, type:18, offset:0},
+	{r:0, q:2, type:4, offset:-2},
+	{r:1, q:-2, type:8, offset:1},
+	{r:1, q:-1, type:12, offset:0},
+	{r:1, q:0, type:7, offset:1},
+	{r:1, q:1, type:3, offset:-1},
+	{r:2, q:-2, type:1, offset:-1},
+	{r:2, q:-1, type:2, offset:0},
+	{r:2, q:0, type:4, offset:-1},
 ];
-
-var angle = 0;
-var piece;
+var width = 11,
+	height = 10;
 var board = d3.select("body")
 	.append("svg")
-	.attr("id", "board");
+	.attr("id", "board")
+	.attr("viewBox", "" + (-width/2) + "," + (-height/2) + "," + width + "," + height);
+//	.attr("preserveAspectRatio", "xMidYMid meet");
 board.selectAll(".piece")
 	.data(pieces)
 	.enter()
@@ -68,7 +69,8 @@ function createPiece(d)
 		.attr("transform", "translate("+p2cstring(2*d.q, 0, 2*d.r, -60)+")")
 		.append("g")
 		.attr("transform", "rotate("+(d.offset*60)+")")
-		.on("click", rotate);
+		.on("click", rotate)
+		.on("touchend", rotate);
 	piece.append("circle")
 		.classed("piece-background", true)
 		.attr({cx:"0", cy:"0", r:"1"});
@@ -128,42 +130,21 @@ function rotate(d)
 		.transition()
 		.attr("transform", "rotate("+(d.offset*60)+")")
 		.duration(250);
+	d3.event.preventDefault();
 }
 
-function p2cstring(centerX, centerY, radius, angleInDegrees)
+// Convert polar coordinates to Cartesian
+function p2c(cx, cy, r, deg)
 {
-	coord = p2c(centerX, centerY, radius, angleInDegrees);
+	var rad = deg * Math.PI / 180.0;
+	return { x: cx + (r * Math.cos(rad)), y: cy - (r * Math.sin(rad)) };
+}
+
+function p2cstring(cx, cy, r, deg)
+{
+	coord = p2c(cx, cy, r, deg);
 	return " " + coord.x + "," + coord.y;
 }
-
-function p2c(centerX, centerY, radius, angleInDegrees) {
-  var angleInRadians = angleInDegrees * Math.PI / 180.0;
-
-  return {
-    x: centerX + (radius * Math.cos(angleInRadians)),
-    y: centerY - (radius * Math.sin(angleInRadians))
-  };
-}
-
-function describeArc(x, y, radius, startAngle, endAngle){
-
-    var start = polarToCartesian(x, y, radius, endAngle);
-    var end = polarToCartesian(x, y, radius, startAngle);
-
-    var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-
-    var d = [
-        "M", start.x, start.y, 
-        "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
-    ].join(" ");
-
-    return d;
-}
-
-var width = 11,
-	height = 10;
-board.attr("viewBox", "" + (-width/2) + "," + (-height/2) + "," + width + "," + height);
-//	.attr("preserveAspectRatio", "xMidYMid meet");
 
 </script>
 
