@@ -25,7 +25,7 @@
 }
 </style>
 <body>
-<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
 var pieces = [
@@ -73,7 +73,9 @@ function createPiece(d)
 		.on("touchend", rotate);
 	piece.append("circle")
 		.classed("piece-background", true)
-		.attr({cx:"0", cy:"0", r:"1"});
+		.attr("cx", "0")
+		.attr("cy", "0")
+		.attr("r", "1");
 	var path = piece.append("path")
 		.classed("piece-path", true);
 	switch (d.type)
