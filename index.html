@@ -1,4 +1,5 @@
 <html>
+<title>HexaWeb</title>
 <style>
 
 #board {
@@ -15,7 +16,11 @@
 }
 
 .piece-background {
+	stroke-width: .05px;
+	stroke: #ddd;
 	fill: #ddd;
+	-webkit-transition: stroke .2s; /* Safari */
+    transition: stroke .2s;
 }
 
 .piece-path {
@@ -23,31 +28,54 @@
 	stroke: #000;
 	fill: #aaa;
 }
+.piece.satisfied .piece-background {
+	stroke: #ada;
+	-webkit-transition: stroke .2s; /* Safari */
+    transition: stroke .2s;
+}
 </style>
 <body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
+var pieceSignature = [
+	[false, false, false, false, false, false], // 0
+	[ true, false, false, false, false, false], // 1
+	[ true,  true, false, false, false, false], // 2
+	[ true, false,  true, false, false, false], // 3
+	[ true, false, false,  true, false, false], // 4
+	[ true,  true,  true, false, false, false], // 5
+	[ true,  true, false,  true, false, false], // 6
+	[ true,  true, false, false,  true, false], // 7
+	[ true, false,  true, false,  true, false], // 8
+	[ true,  true,  true,  true, false, false], // 9
+	[ true,  true,  true, false,  true, false], // 10
+	[ true,  true, false,  true,  true, false], // 11
+	[ true,  true,  true,  true,  true, false], // 12
+	[ true,  true,  true,  true,  true,  true], // 13
+];
+
+
 var pieces = [
-	{r:-2, q:0, type:0, offset:0},
-	{r:-2, q:1, type:5, offset:3},
-	{r:-2, q:2, type:2, offset:3},
-	{r:-1, q:-1, type:1, offset:1},
-	{r:-1, q:0, type:7, offset:1},
-	{r:-1, q:1, type:0, offset:2},
-	{r:-1, q:2, type:6, offset:4},
-	{r:0, q:-2, type:0, offset:1},
-	{r:0, q:-1, type:9, offset:2},
-	{r:0, q:0, type:11, offset:0},
-	{r:0, q:1, type:10, offset:0},
-	{r:0, q:2, type:4, offset:-2},
-	{r:1, q:-2, type:8, offset:1},
-	{r:1, q:-1, type:12, offset:0},
-	{r:1, q:0, type:7, offset:1},
-	{r:1, q:1, type:3, offset:-1},
-	{r:2, q:-2, type:1, offset:-1},
-	{r:2, q:-1, type:2, offset:0},
-	{r:2, q:0, type:4, offset:-1},
+	{r:-2, q:0, type:1, offset:0},
+	{r:-2, q:1, type:6, offset:3},
+	{r:-2, q:2, type:3, offset:3},
+	{r:-1, q:-1, type:2, offset:1},
+	{r:-1, q:0, type:8, offset:1},
+	{r:-1, q:1, type:1, offset:2},
+	{r:-1, q:2, type:7, offset:2},
+	{r:0, q:-2, type:1, offset:1},
+	{r:0, q:-1, type:10, offset:2},
+	{r:0, q:0, type:12, offset:0},
+	{r:0, q:1, type:11, offset:0},
+	{r:0, q:2, type:5, offset:-2},
+	{r:1, q:-2, type:9, offset:1},
+	{r:1, q:-1, type:13, offset:0},
+	{r:1, q:0, type:8, offset:1},
+	{r:1, q:1, type:4, offset:-1},
+	{r:2, q:-2, type:2, offset:-1},
+	{r:2, q:-1, type:3, offset:0},
+	{r:2, q:0, type:5, offset:-1},
 ];
 var width = 11,
 	height = 10;
@@ -62,10 +90,15 @@ board.selectAll(".piece")
 	.append("g")
 	.classed("piece", true)
 	.each(createPiece);
+board.selectAll(".piece").classed("satisfied", isSatisfied);
+
+function rawid(coord) { return  "p"+coord.r+","+coord.q; }
+function id(coord)    { return "#p"+coord.r+","+coord.q; }
 
 function createPiece(d)
 {
 	var piece = d3.select(this)
+		.attr("id", rawid(d))
 		.attr("transform", "translate("+p2cstring(2*d.q, 0, 2*d.r, -60)+")")
 		.append("g")
 		.attr("transform", "rotate("+(d.offset*60)+")")
@@ -75,51 +108,89 @@ function createPiece(d)
 		.classed("piece-background", true)
 		.attr("cx", "0")
 		.attr("cy", "0")
-		.attr("r", "1");
+		.attr("r", "0.975");
 	var path = piece.append("path")
 		.classed("piece-path", true);
 	switch (d.type)
 	{
-	case 0: // 6
+	case 1: // 6
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " L "+p2cstring(0,0,.2,0)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,1));
 		break;
-	case 1: // 1 5
+	case 2: // 1 5
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 2: // 2 4
+	case 3: // 2 4
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 3: // 3 3
+	case 4: // 3 3
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,180)  + " Q 0,0"+p2cstring(0,0,1,00));
 		break;
-	case 4: // 1 1 4
+	case 5: // 1 1 4
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 5: // 1 2 3
+	case 6: // 1 2 3
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 6: // 1 3 2
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,0));
+	case 7: // 1 3 2
+		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 7: // 2 2 2
+	case 8: // 2 2 2
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 8: // 1 1 1 3
+	case 9: // 1 1 1 3
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 9: // 1 1 2 2
+	case 10: // 1 1 2 2
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 10: // 1 2 1 2
+	case 11: // 1 2 1 2
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 11: // 1 1 1 1 2
+	case 12: // 1 1 1 1 2
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
-	case 12: // 1 1 1 1 1 1
+	case 13: // 1 1 1 1 1 1
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,300) + " Q 0,0"+p2cstring(0,0,1,0));
 		break;
 	}
+}
+
+// expects an object with row and column entries r and q
+// returns a list of neighboring coordinates
+function nbrsOf(coord)
+{
+	var r = coord.r, q = coord.q;
+	return [
+		{r:r, q:q+1},
+		{r:r-1, q:q+1},
+		{r:r-1, q:q},
+		{r:r, q:q-1},
+		{r:r+1, q:q-1},
+		{r:r+1, q:q},
+	];
+}
+
+function isSatisfied(d)
+{
+	var nbrs = nbrsOf(d);
+	var sig = pieceSignature[d.type];
+	for (var i = 0; i < 6; i++)
+	{
+		var hasEdge = sig[(i+d.offset)%6];
+		if (hasEdge)
+		{
+			var nbr = nbrs[i];
+			var nbrnode = document.getElementById(rawid(nbr));
+			if (nbrnode == null)
+				return false;
+			var nbrdata = nbrnode.__data__;
+			var nbrsig = pieceSignature[nbrdata.type];
+			var hasMatchingEdge = nbrsig[(i+3+nbrdata.offset)%6];
+			if (!hasMatchingEdge)
+				return false;
+		}
+	}
+	return true;
 }
 
 function rotate(d)
@@ -131,7 +202,8 @@ function rotate(d)
 	d3.select(this)
 		.transition()
 		.attr("transform", "rotate("+(d.offset*60)+")")
-		.duration(250);
+		.duration(250)
+		.on("end", function(d) { board.selectAll(".piece").classed("satisfied", isSatisfied); });
 	d3.event.preventDefault();
 }
 
