@@ -2,7 +2,8 @@
 <title>HexaWeb</title>
 <style>
 
-#board {
+#board
+{
 	display: block;
 	position: absolute;
 	top: 0;
@@ -11,28 +12,35 @@
 	height: 100%;
 }
 
-.piece {
+.piece
+{
 
 }
 
-.piece-background {
-	stroke-width: .05px;
-	stroke: #ddd;
-	fill: #ddd;
-	-webkit-transition: stroke .2s; /* Safari */
+.piece-background 
+{
+	fill: #eee;
+/* 
+	-webkit-transition: stroke .2s;
     transition: stroke .2s;
+*/
 }
 
-.piece-path {
+.piece-path
+{
 	stroke-width:.05px;
 	stroke: #000;
 	fill: #aaa;
 }
-.piece.satisfied .piece-background {
+
+/* 
+.piece.satisfied .piece-background
+{
 	stroke: #ada;
-	-webkit-transition: stroke .2s; /* Safari */
+	-webkit-transition: stroke .2s;
     transition: stroke .2s;
 }
+*/
 </style>
 <body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -55,7 +63,7 @@ var pieceSignature = [
 	[ true,  true,  true,  true,  true,  true], // 13
 ];
 
-
+// all-piece demo
 var pieces = [
 	{r:-2, q:0, type:1, offset:0},
 	{r:-2, q:1, type:6, offset:3},
@@ -68,15 +76,66 @@ var pieces = [
 	{r:0, q:-1, type:10, offset:2},
 	{r:0, q:0, type:12, offset:0},
 	{r:0, q:1, type:11, offset:0},
-	{r:0, q:2, type:5, offset:-2},
+	{r:0, q:2, type:5, offset:4},
 	{r:1, q:-2, type:9, offset:1},
 	{r:1, q:-1, type:13, offset:0},
 	{r:1, q:0, type:8, offset:1},
-	{r:1, q:1, type:4, offset:-1},
-	{r:2, q:-2, type:2, offset:-1},
+	{r:1, q:1, type:4, offset:5},
+	{r:2, q:-2, type:2, offset:5},
 	{r:2, q:-1, type:3, offset:0},
-	{r:2, q:0, type:5, offset:-1},
+	{r:2, q:0, type:5, offset:5},
 ];
+
+/*
+// harder!
+pieces = [ 
+	{r:-2, q:0, type:1, offset:0},
+	{r:-2, q:1, type:5, offset:3},
+	{r:-2, q:2, type:2, offset:2},
+	{r:-1, q:-1, type:5, offset:2},
+	{r:-1, q:0, type:3, offset:5},
+	{r:-1, q:1, type:2, offset:5},
+	{r:-1, q:2, type:3, offset:4},
+	{r:0, q:-2, type:1, offset:5},
+	{r:0, q:-1, type:10, offset:2},
+	{r:0, q:0, type:7, offset:1},
+	{r:0, q:1, type:11, offset:0},
+	{r:0, q:2, type:2, offset:3},
+	{r:1, q:-2, type:5, offset:1},
+	{r:1, q:-1, type:12, offset:4},
+	{r:1, q:0, type:10, offset:5},
+	{r:1, q:1, type:1, offset:5},
+	{r:2, q:-2, type:2, offset:5},
+	{r:2, q:-1, type:3, offset:0},
+	{r:2, q:0, type:2, offset:4},
+];
+*/
+
+/*
+// cute
+pieces = [
+	{r:-2, q:0, type:1, offset:1}, 
+	{r:-2, q:1, type:3, offset:2}, 
+	{r:-2, q:2, type:3, offset:3}, 
+	{r:-1, q:-1, type:2, offset:2}, 
+	{r:-1, q:0, type:11, offset:2}, 
+	{r:-1, q:1, type:1, offset:2}, 
+	{r:-1, q:2, type:7, offset:2}, 
+	{r:0, q:-2, type:5, offset:1}, 
+	{r:0, q:-1, type:12, offset:5}, 
+	{r:0, q:0, type:5, offset:0}, 
+	{r:0, q:1, type:6, offset:0}, 
+	{r:0, q:2, type:2, offset:4}, 
+	{r:1, q:-2, type:5, offset:0}, 
+	{r:1, q:-1, type:10, offset:4}, 
+	{r:1, q:0, type:7, offset:1}, 
+	{r:1, q:1, type:2, offset:3}, 
+	{r:2, q:-2, type:2, offset:0}, 
+	{r:2, q:-1, type:4, offset:0}, 
+	{r:2, q:0, type:5, offset:5};
+];
+*/
+
 var width = 11,
 	height = 10;
 var board = d3.select("body")
@@ -90,10 +149,163 @@ board.selectAll(".piece")
 	.append("g")
 	.classed("piece", true)
 	.each(createPiece);
-board.selectAll(".piece").classed("satisfied", isSatisfied);
+//board.selectAll(".piece").classed("satisfied", isSatisfied);
+board.selectAll(".piece").call(d3.drag()
+	.on("start", dragstarted)
+	.on("drag", dragged)
+	.on("end", dragended));
 
-function rawid(coord) { return  "p"+coord.r+","+coord.q; }
-function id(coord)    { return "#p"+coord.r+","+coord.q; }
+function dist(c1, c2)
+{
+	return Math.sqrt((c1.x-c2.x)**2 + (c1.y-c2.y)**2);
+}
+
+function dragstarted(d)
+{
+}
+
+function dragged(d)
+{
+	var center = p2c(2*d.q, 0, 2*d.r, -60);
+	if (dist(center, d3.event) >= 1)
+	{
+		var angle = (180/Math.PI*Math.atan2(center.y-d3.event.y, d3.event.x-center.x)+360)%360;
+		var sig = pieceSignature[d.type];
+		if (d.type == 0)
+		{
+			d3.select(this).select(".piece-path").attr("d", "M"+p2cstring(0,0,1,angle+60*d.offset) + " L "+p2cstring(0,0,.2,angle+60*d.offset)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,angle+60*d.offset+1));
+		}
+		else
+		{
+			var pathspecs = "M";
+			for (var i = 0; i<6; i++)
+			{
+				if (sig[i])
+					pathspecs += p2cstring(0,0,1,i*60) + " Q 0,0";
+				if (60*i < (angle+60*d.offset)%360 && (angle+60*d.offset)%360 < 60*(i+1))
+					pathspecs += p2cstring(0,0,1,angle+60*d.offset) + " Q 0,0";
+			}
+			pathspecs += p2cstring(0,0,1,0);
+			d3.select(this).select(".piece-path").attr("d", pathspecs);
+		}
+	}
+	else
+	{
+		// FIX ME: If you are going to call it again, make it a function!
+		var path = d3.select(this).select(".piece-path");
+		switch (d.type)
+		{
+		case 0:
+			path.attr("d","");
+			break;
+		case 1:
+			path.attr("d", "M"+p2cstring(0,0,1,0) + " L "+p2cstring(0,0,.2,0)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,1));
+			break;
+		default:
+			var sig = pieceSignature[d.type];
+			var pathspecs = "M";
+			for (var i = 0; i<6; i++) if (sig[i])
+			{
+				pathspecs += p2cstring(0,0,1,i*60) + " Q 0,0";
+			}
+			pathspecs += p2cstring(0,0,1,0);
+			path.attr("d", pathspecs);
+			break;
+		}
+	}
+}
+
+function dragended(d)
+{
+	var nbrs = nbrsOf(d);
+	var addEdge = false;
+	var i, nbr;
+	for (i = 0; i<6; i++)
+	{
+		nbr = nbrs[i];
+		var center = p2c(2*nbr.q, 0, 2*nbr.r, -60);
+		if (dist(center, d3.event) <= 1)
+		{
+			addEdge = true;
+			break;
+		}
+	}
+	if (addEdge)
+	{
+		var sig = pieceSignature[d.type];
+		var newsig = []
+		for (var j = 0; j<6; j++)
+			newsig.push(sig[(j+d.offset)%6]);
+		newsig[i] = !newsig[i];
+		findType(d, newsig);
+	}
+	
+	// FIX ME: If you are going to call it again, make it a function!
+	var path = d3.select(this).select(".piece-path");
+	switch (d.type)
+	{
+	case 0:
+		path.attr("d","");
+		break;
+	case 1:
+		path.attr("d", "M"+p2cstring(0,0,1,0) + " L "+p2cstring(0,0,.2,0)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,1));
+		break;
+	default:
+		var sig = pieceSignature[d.type];
+		var pathspecs = "M";
+		for (var i = 0; i<6; i++) if (sig[i])
+		{
+			pathspecs += p2cstring(0,0,1,i*60) + " Q 0,0";
+		}
+		pathspecs += p2cstring(0,0,1,0);
+		path.attr("d", pathspecs);
+		break;
+	}
+	d3.select(this).select(".piece-inner").attr("transform", "rotate("+(d.offset*60)+")");
+}
+
+function findType(d, signature)
+{
+	for (var type = 0; type < pieceSignature.length; type++)
+	{
+		var testsig = pieceSignature[type];
+		for (var offset = 0; offset < 6; offset++)
+		{
+			var success = true;
+			for (var i = 0; i<6; i++)
+			{
+				if (signature[i] != testsig[(i+offset)%6])
+				{
+					success = false;
+					break;
+				}
+			}
+			if (success)
+			{
+				d.type = type;
+				d.offset = offset;
+				return;
+			}
+		}
+	}
+}
+
+function scramble()
+{
+	for (data of pieces)
+	{
+		data.offset = Math.floor(6*Math.random());
+	}
+	// FIX ME: If you are going to call it again, make it a function!
+	board.selectAll(".piece-inner")
+		.transition()
+		.attr("transform", function(d) { return "rotate("+(d.offset*60)+")";} )
+		.duration(function() { return 200+50*Math.floor(7*Math.random()); })
+		.on("end", function(d) { board.selectAll(".piece").classed("satisfied", isSatisfied); });
+}
+
+function rawid(coord) { return  "r"+coord.r+"q"+coord.q; }
+function id(coord)    { return "#r"+coord.r+"q"+coord.q; }
 
 function createPiece(d)
 {
@@ -101,6 +313,7 @@ function createPiece(d)
 		.attr("id", rawid(d))
 		.attr("transform", "translate("+p2cstring(2*d.q, 0, 2*d.r, -60)+")")
 		.append("g")
+		.classed("piece-inner", true)
 		.attr("transform", "rotate("+(d.offset*60)+")")
 		.on("click", rotate)
 		.on("touchend", rotate);
@@ -108,49 +321,27 @@ function createPiece(d)
 		.classed("piece-background", true)
 		.attr("cx", "0")
 		.attr("cy", "0")
-		.attr("r", "0.975");
+		.attr("r", "1");
 	var path = piece.append("path")
 		.classed("piece-path", true);
+	// FIX ME: If you are going to call it again, make it a function!
 	switch (d.type)
 	{
-	case 1: // 6
+	case 0:
+		path.attr("d","");
+		break;
+	case 1:
 		path.attr("d", "M"+p2cstring(0,0,1,0) + " L "+p2cstring(0,0,.2,0)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,1));
 		break;
-	case 2: // 1 5
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 3: // 2 4
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 4: // 3 3
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,180)  + " Q 0,0"+p2cstring(0,0,1,00));
-		break;
-	case 5: // 1 1 4
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 6: // 1 2 3
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 7: // 1 3 2
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 8: // 2 2 2
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 9: // 1 1 1 3
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 10: // 1 1 2 2
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 11: // 1 2 1 2
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 12: // 1 1 1 1 2
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,0));
-		break;
-	case 13: // 1 1 1 1 1 1
-		path.attr("d", "M"+p2cstring(0,0,1,0) + " Q 0,0"+p2cstring(0,0,1,60) + " Q 0,0"+p2cstring(0,0,1,120) + " Q 0,0"+p2cstring(0,0,1,180) + " Q 0,0"+p2cstring(0,0,1,240) + " Q 0,0"+p2cstring(0,0,1,300) + " Q 0,0"+p2cstring(0,0,1,0));
+	default:
+		var sig = pieceSignature[d.type];
+		var pathspecs = "M";
+		for (var i = 0; i<6; i++) if (sig[i])
+		{
+			pathspecs += p2cstring(0,0,1,i*60) + " Q 0,0";
+		}
+		pathspecs += p2cstring(0,0,1,0);
+		path.attr("d", pathspecs);
 		break;
 	}
 }
@@ -196,14 +387,14 @@ function isSatisfied(d)
 function rotate(d)
 {
 	if (d3.event.shiftKey)
-		d.offset = (d.offset-1)%6;
+		d.offset = (d.offset+5)%6;
 	else
 		d.offset = (d.offset+1)%6;
 	d3.select(this)
 		.transition()
 		.attr("transform", "rotate("+(d.offset*60)+")")
-		.duration(250)
-		.on("end", function(d) { board.selectAll(".piece").classed("satisfied", isSatisfied); });
+		.duration(250);
+// 		.on("end", function(d) { board.selectAll(".piece").classed("satisfied", isSatisfied); });
 	d3.event.preventDefault();
 }
 
