@@ -199,11 +199,12 @@ pieces = [
 
 var board = d3.select("body")
 	.append("svg")
-	.attr("id", "board")
-	.on("click", function() { newPieceAt(d3.event); });
+	.attr("id", "board");
+//	.on("click", function() { newPieceAt(d3.event); });
 //	.attr("preserveAspectRatio", "xMidYMid meet");
+scramble();
 updateDrawnPieces();
-
+scramble();
 function updateDrawnPieces()
 {
 	var piecesSelection = board.selectAll(".piece")
@@ -211,11 +212,11 @@ function updateDrawnPieces()
 	piecesSelection.enter()
 		.append("g")
 		.classed("piece", true)
-		.each(createPiece)
-		.call(d3.drag()
-		.on("start", dragstarted)
-		.on("drag", dragged)
-		.on("end", dragended));
+		.each(createPiece);
+// 		.call(d3.drag()
+// 		.on("start", dragstarted)
+// 		.on("drag", dragged)
+// 		.on("end", dragended));
 	piecesSelection.exit()
 		.remove();
 	resizeViewBox();
