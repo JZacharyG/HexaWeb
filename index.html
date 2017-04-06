@@ -63,6 +63,7 @@ var pieceSignature = [
 	[ true,  true,  true,  true,  true,  true], // 13
 ];
 
+/*
 // all-piece demo
 var pieces = [
 	{r:-2, q:0, type:1, offset:0},
@@ -85,8 +86,8 @@ var pieces = [
 	{r:2, q:-1, type:3, offset:0},
 	{r:2, q:0, type:5, offset:5},
 ];
+*/
 
-/*
 // harder!
 pieces = [ 
 	{r:-2, q:0, type:1, offset:0},
@@ -109,7 +110,7 @@ pieces = [
 	{r:2, q:-1, type:3, offset:0},
 	{r:2, q:0, type:2, offset:4},
 ];
-*/
+
 
 /*
 // cute
@@ -135,30 +136,101 @@ pieces = [
 	{r:2, q:0, type:5, offset:5};
 ];
 */
+/*
+// pretty
+pieces = [
+	{"q":3,"r":-3,"offset":0,"type":5},
+	{"q":2,"r":-3,"offset":2,"type":11},
+	{"q":1,"r":-3,"offset":2,"type":11},
+	{"q":3,"r":-2,"offset":0,"type":11},
+	{"q":3,"r":-1,"offset":0,"type":11},
+	{"q":3,"r":0,"offset":1,"type":5},
+	{"q":2,"r":1,"offset":1,"type":11},
+	{"q":1,"r":2,"offset":1,"type":11},
+	{"q":0,"r":3,"offset":2,"type":5},
+	{"q":-1,"r":3,"offset":2,"type":11},
+	{"q":-2,"r":3,"offset":2,"type":11},
+	{"q":-3,"r":3,"offset":3,"type":5},
+	{"q":-3,"r":2,"offset":0,"type":11},
+	{"q":-3,"r":1,"offset":0,"type":11},
+	{"q":-2,"r":-1,"offset":1,"type":11},
+	{"q":-3,"r":0,"offset":4,"type":5},
+	{"q":-1,"r":-2,"offset":1,"type":11},
+	{"q":0,"r":-3,"offset":5,"type":5},
+	{"q":-1,"r":-3,"offset":1,"type":2},
+	{"q":-2,"r":-2,"offset":1,"type":2},
+	{"q":-3,"r":-1,"offset":1,"type":2},
+	{"q":-4,"r":0,"offset":0,"type":1},
+	{"q":-4,"r":1,"offset":0,"type":2},
+	{"q":-4,"r":2,"offset":0,"type":2},
+	{"q":-4,"r":3,"offset":0,"type":2},
+	{"q":-3,"r":4,"offset":5,"type":2},
+	{"q":-4,"r":4,"offset":5,"type":1},
+	{"q":-2,"r":4,"offset":5,"type":2},
+	{"q":0,"r":4,"offset":4,"type":1},
+	{"q":-1,"r":4,"offset":5,"type":2},
+	{"q":1,"r":3,"offset":4,"type":2},
+	{"q":2,"r":2,"offset":4,"type":2},
+	{"q":3,"r":1,"offset":4,"type":2},
+	{"q":4,"r":0,"offset":3,"type":1},
+	{"q":4,"r":-1,"offset":3,"type":2},
+	{"q":4,"r":-2,"offset":3,"type":2},
+	{"q":4,"r":-3,"offset":3,"type":2},
+	{"q":4,"r":-4,"offset":2,"type":1},
+	{"q":3,"r":-4,"offset":2,"type":2},
+	{"q":2,"r":-4,"offset":2,"type":2},
+	{"q":1,"r":-4,"offset":2,"type":2},
+	{"q":0,"r":-4,"offset":1,"type":1},
+	{"q":0,"r":-2,"offset":5,"type":3},
+	{"q":1,"r":-2,"offset":5,"type":2},
+	{"q":2,"r":-2,"offset":0,"type":3},
+	{"q":2,"r":-1,"offset":0,"type":2},
+	{"q":2,"r":0,"offset":1,"type":3},
+	{"q":1,"r":1,"offset":1,"type":2},
+	{"q":0,"r":2,"offset":2,"type":3},
+	{"q":-1,"r":2,"offset":2,"type":2},
+	{"q":-2,"r":2,"offset":3,"type":3},
+	{"q":-2,"r":1,"offset":3,"type":2},
+	{"q":-2,"r":0,"offset":4,"type":3},
+	{"q":-1,"r":-1,"offset":4,"type":2},
+	{"q":4,"r":-3,"offset":3,"type":2}]
+*/
 
-var width = 11,
-	height = 10;
+
 var board = d3.select("body")
 	.append("svg")
 	.attr("id", "board")
-	.attr("viewBox", "" + (-width/2) + "," + (-height/2) + "," + width + "," + height)
-	.on("click", function() {newPieceAt(d3.event)});
+	.on("click", function() { newPieceAt(d3.event); });
 //	.attr("preserveAspectRatio", "xMidYMid meet");
 updateDrawnPieces();
 
 function updateDrawnPieces()
 {
-	board.selectAll(".piece")
-		.data(pieces)
-		.enter()
+	var piecesSelection = board.selectAll(".piece")
+		.data(pieces, id);
+	piecesSelection.enter()
 		.append("g")
 		.classed("piece", true)
-		.each(createPiece);
-	//board.selectAll(".piece").classed("satisfied", isSatisfied);
-	board.selectAll(".piece").call(d3.drag()
+		.each(createPiece)
+		.call(d3.drag()
 		.on("start", dragstarted)
 		.on("drag", dragged)
 		.on("end", dragended));
+	piecesSelection.exit()
+		.remove();
+	resizeViewBox();
+}
+
+function resizeViewBox()
+{
+	var width = 0, height = 0;
+	for (d of pieces)
+	{
+		var center = p2c(2*d.q, 0, 2*d.r, -60);
+		width = Math.max(width, Math.abs(center.x)+1.5);
+		height = Math.max(height, Math.abs(center.y)+1.5);
+	}
+	board.attr("viewBox", "" + (-width) + "," + (-height) + "," + (2*width) + "," + (2*height))
 }
 
 function dist(c1, c2) { return Math.sqrt((c1.x-c2.x)**2 + (c1.y-c2.y)**2); }
@@ -400,8 +472,24 @@ function newPieceAt(xycoord)
 {
 	var scaledCoord = scaleCoords(xycoord);
 	var data = coord2hex(scaledCoord);
-	data.type = data.offset = 0;
+	if (document.getElementById(rawid(data)) != null) return
+	data.offset = data.type = 0;
 	pieces.push(data);
+	updateDrawnPieces();
+}
+
+function deletePieceAt(xycoord)
+{
+	var scaledCoord = scaleCoords(xycoord);
+	var data = coord2hex(scaledCoord);
+	for (var i = 0; i < pieces.length; i++)
+	{
+		if (pieces[i].r == data.r && pieces[i].q == data.q)
+		{
+			pieces.splice(i,1);
+			break;
+		}
+	}
 	updateDrawnPieces();
 }
 
@@ -443,7 +531,7 @@ function hexRound(x,y,z)
     else
         rz = -rx-ry;
 
-    return {q: rx, r: rz};
+    return {r: rz, q: rx};
 }
 
 </script>
