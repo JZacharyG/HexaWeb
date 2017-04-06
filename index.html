@@ -141,24 +141,41 @@ var width = 11,
 var board = d3.select("body")
 	.append("svg")
 	.attr("id", "board")
-	.attr("viewBox", "" + (-width/2) + "," + (-height/2) + "," + width + "," + height);
+	.attr("viewBox", "" + (-width/2) + "," + (-height/2) + "," + width + "," + height)
+	.on("click", function() {newPieceAt(d3.event)});
 //	.attr("preserveAspectRatio", "xMidYMid meet");
-board.selectAll(".piece")
-	.data(pieces)
-	.enter()
-	.append("g")
-	.classed("piece", true)
-	.each(createPiece);
-//board.selectAll(".piece").classed("satisfied", isSatisfied);
-board.selectAll(".piece").call(d3.drag()
-	.on("start", dragstarted)
-	.on("drag", dragged)
-	.on("end", dragended));
+updateDrawnPieces();
+
+function updateDrawnPieces()
+{
+	board.selectAll(".piece")
+		.data(pieces)
+		.enter()
+		.append("g")
+		.classed("piece", true)
+		.each(createPiece);
+	//board.selectAll(".piece").classed("satisfied", isSatisfied);
+	board.selectAll(".piece").call(d3.drag()
+		.on("start", dragstarted)
+		.on("drag", dragged)
+		.on("end", dragended));
+}
 
 function dist(c1, c2) { return Math.sqrt((c1.x-c2.x)**2 + (c1.y-c2.y)**2); }
 
 function dragstarted(d)
 {
+}
+
+var pt = document.getElementById("board").createSVGPoint(); // Created once for document
+
+function scaleCoords(evt)
+{
+	pt.x = evt.clientX;
+	pt.y = evt.clientY;
+	
+	// The cursor point, translated into svg coordinates
+	return pt.matrixTransform(document.getElementById("board").getScreenCTM().inverse());
 }
 
 function dragged(data)
@@ -376,6 +393,16 @@ function rotate(d)
 		.duration(250);
 // 		.on("end", function(d) { board.selectAll(".piece").classed("satisfied", isSatisfied); });
 	d3.event.preventDefault();
+	d3.event.stopPropagation();
+}
+
+function newPieceAt(xycoord)
+{
+	var scaledCoord = scaleCoords(xycoord);
+	var data = coord2hex(scaledCoord);
+	data.type = data.offset = 0;
+	pieces.push(data);
+	updateDrawnPieces();
 }
 
 // Convert polar coordinates to Cartesian
@@ -389,6 +416,34 @@ function p2cstring(cx, cy, r, deg)
 {
 	coord = p2c(cx, cy, r, deg);
 	return " " + coord.x + "," + coord.y;
+}
+
+function coord2hex(xycoord)
+{
+	var x = (xycoord.x * Math.sqrt(3)/3 - xycoord.y/3)/(2/Math.sqrt(3));
+	var z = (xycoord.y * 2/3)/(2/Math.sqrt(3));
+	var y = -x-z;
+	return hexRound(x,y,z);
+}
+
+function hexRound(x,y,z)
+{
+    var rx = Math.round(x);
+    var ry = Math.round(y);
+    var rz = Math.round(z);
+
+    var dx = Math.abs(rx - x);
+    var dy = Math.abs(ry - y);
+    var dz = Math.abs(rz - z);
+
+    if (dx > dy && dx > dz)
+        rx = -ry-rz;
+    else if (dy > dz)
+        ry = -rx-rz;
+    else
+        rz = -rx-ry;
+
+    return {q: rx, r: rz};
 }
 
 </script>
