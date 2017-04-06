@@ -155,56 +155,85 @@ board.selectAll(".piece").call(d3.drag()
 	.on("drag", dragged)
 	.on("end", dragended));
 
-function dist(c1, c2)
-{
-	return Math.sqrt((c1.x-c2.x)**2 + (c1.y-c2.y)**2);
-}
+function dist(c1, c2) { return Math.sqrt((c1.x-c2.x)**2 + (c1.y-c2.y)**2); }
 
 function dragstarted(d)
 {
 }
 
-function dragged(d)
+function dragged(data)
 {
-	var center = p2c(2*d.q, 0, 2*d.r, -60);
+	d3.selectAll(".piece").select(".piece-path").attr("d", function(d) {return pathSpecification(d);});
+	var center = p2c(2*data.q, 0, 2*data.r, -60);
 	if (dist(center, d3.event) >= 1)
 	{
+		
 		var angle = (180/Math.PI*Math.atan2(center.y-d3.event.y, d3.event.x-center.x)+360)%360;
 		d3.select(this).select(".piece-path").attr("d", function(d) {return pathSpecification(d, angle);});
-	}
-	else
-	{
-		d3.select(this).select(".piece-path").attr("d", function(d) {return pathSpecification(d);});
+		var endpoint = p2c(center.x, center.y, 1, angle);
+		
+		var nbrs = nbrsOf(data);
+		for (var i = 0; i<6; i++)
+		{
+			nbr = nbrs[i];
+			var nbrcenter = p2c(2*nbr.q, 0, 2*nbr.r, -60);
+			if (dist(nbrcenter, d3.event) <= 1)
+			{
+				var nbrselection = board.select(id(nbr));
+				if (!nbrselection.empty())
+				{
+					var nbrdata = nbrselection.datum();
+					var angle2 = (180/Math.PI*Math.atan2(nbrcenter.y-endpoint.y, endpoint.x-nbrcenter.x)+360)%360;
+					nbrselection.select(".piece-path").attr("d", function(d) {return pathSpecification(d, angle2);});
+				}
+				break;
+			}
+		}
 	}
 }
 
-function dragended(d)
+function dragended(data)
 {
-	var nbrs = nbrsOf(d);
-	var addEdge = false;
-	var i, nbr;
+	var nbrs = nbrsOf(data);
+	var valid = false;
+	var i, nbr, nbrdata, nbrselection;
 	for (i = 0; i<6; i++)
 	{
 		nbr = nbrs[i];
 		var center = p2c(2*nbr.q, 0, 2*nbr.r, -60);
 		if (dist(center, d3.event) <= 1)
 		{
-			addEdge = true;
+			nbrselection = board.select(id(nbr));
+			if (!nbrselection.empty())
+			{
+				nbrdata = nbrselection.datum();
+				valid = true;
+			}
 			break;
 		}
 	}
-	if (addEdge)
+	if (valid)
 	{
-		var sig = pieceSignature[d.type];
+		var sig = pieceSignature[data.type];
 		var newsig = []
 		for (var j = 0; j<6; j++)
-			newsig.push(sig[(j+d.offset)%6]);
-		newsig[i] = !newsig[i];
-		findType(d, newsig);
+			newsig.push(sig[(j+data.offset)%6]);
+		var createEdge = newsig[i] = !newsig[i];
+		findType(data, newsig);
+		
+		sig = pieceSignature[nbrdata.type];
+		newsig = []
+		for (var j = 0; j<6; j++)
+			newsig.push(sig[(j+nbrdata.offset)%6]);
+		newsig[(i+3)%6] = createEdge;
+		findType(nbrdata, newsig);
+		
+		nbrselection.select(".piece-path").attr("d", function(d) {return pathSpecification(d);});
+		nbrselection.select(".piece-inner").attr("transform", "rotate("+(nbrdata.offset*60)+")");
 	}
 	
 	d3.select(this).select(".piece-path").attr("d", function(d) {return pathSpecification(d);});
-	d3.select(this).select(".piece-inner").attr("transform", "rotate("+(d.offset*60)+")");
+	d3.select(this).select(".piece-inner").attr("transform", "rotate("+(data.offset*60)+")");
 }
 
 function findType(d, signature)
