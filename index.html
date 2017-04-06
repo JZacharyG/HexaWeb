@@ -12,11 +12,6 @@
 	height: 100%;
 }
 
-.piece
-{
-
-}
-
 .piece-background 
 {
 	fill: #eee;
@@ -354,16 +349,16 @@ function findType(d, signature)
 
 function scramble()
 {
-	for (data of pieces)
-	{
-		data.offset = Math.floor(6*Math.random());
-	}
-	// FIX ME: If you are going to call it again, make it a function!
 	board.selectAll(".piece-inner")
-		.transition()
-		.attr("transform", function(d) { return "rotate("+(d.offset*60)+")";} )
-		.duration(function() { return 200+50*Math.floor(7*Math.random()); });
-// 		.on("end", function(d) { board.selectAll(".piece").classed("satisfied", isSatisfied); });
+		.each(function(d)
+		{
+			var oldoffset = d.offset;
+			d.offset = Math.floor(6*Math.random());
+			var diff = Math.abs(d.offset-oldoffset);
+			var time = 225*(Math.min(diff, 6-diff));
+			rotate.call(this, d, time);
+		});
+	if (checkWin()) onWin();
 }
 
 function rawid(coord) { return  "r"+coord.r+"q"+coord.q; }
@@ -404,8 +399,8 @@ function createPiece(d)
 		.append("g")
 		.classed("piece-inner", true)
 		.attr("transform", "rotate("+(d.offset*60)+")")
-		.on("click", rotate)
-		.on("touchend", rotate);
+		.on("click", pieceOnClick)
+		.on("touchend", pieceOnClick);
 	piece.append("circle")
 		.classed("piece-background", true)
 		.attr("cx", "0")
@@ -454,19 +449,50 @@ function isSatisfied(d)
 	return true;
 }
 
-function rotate(d)
+function pieceOnClick(d)
 {
 	if (d3.event.shiftKey)
 		d.offset = (d.offset+5)%6;
 	else
 		d.offset = (d.offset+1)%6;
-	d3.select(this)
-		.transition()
-		.attr("transform", "rotate("+(d.offset*60)+")")
-		.duration(250);
-// 		.on("end", function(d) { board.selectAll(".piece").classed("satisfied", isSatisfied); });
+	rotate.call(this, d);
 	d3.event.preventDefault();
 	d3.event.stopPropagation();
+	if (checkWin()) onWin();
+}
+
+// visually rotate piece to match its offset
+function rotate(d, time = 225)
+{
+	if (time > 0)
+	{
+		d3.select(this)
+			.transition()
+			.attr("transform", "rotate("+(d.offset*60)+")")
+			.duration(time)
+			.ease(d3.easeLinear);
+			
+	}
+	else
+	{
+		d3.select(this)
+			.attr("transform", "rotate("+(d.offset*60)+")");
+	}
+}
+
+function checkWin()
+{
+	for (var piece of pieces)
+	{
+		if (!isSatisfied(piece))
+			return false;
+	}
+	return true;
+}
+
+function onWin()
+{
+	console.log("Good job, friend!");
 }
 
 function newPieceAt(xycoord)
