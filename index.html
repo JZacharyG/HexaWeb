@@ -105,135 +105,142 @@ var pieceSignature = [
 /*
 // all-piece demo
 var pieces = [
-	{r:-2, q:0, type:1, offset:0},
-	{r:-2, q:1, type:6, offset:3},
-	{r:-2, q:2, type:3, offset:3},
-	{r:-1, q:-1, type:2, offset:1},
-	{r:-1, q:0, type:8, offset:1},
-	{r:-1, q:1, type:1, offset:2},
-	{r:-1, q:2, type:7, offset:2},
-	{r:0, q:-2, type:1, offset:1},
-	{r:0, q:-1, type:10, offset:2},
-	{r:0, q:0, type:12, offset:0},
-	{r:0, q:1, type:11, offset:0},
-	{r:0, q:2, type:5, offset:4},
-	{r:1, q:-2, type:9, offset:1},
-	{r:1, q:-1, type:13, offset:0},
-	{r:1, q:0, type:8, offset:1},
-	{r:1, q:1, type:4, offset:5},
-	{r:2, q:-2, type:2, offset:5},
-	{r:2, q:-1, type:3, offset:0},
-	{r:2, q:0, type:5, offset:5},
+	{r:-2, q:0, t:1, o:0},
+	{r:-2, q:1, t:6, o:3},
+	{r:-2, q:2, t:3, o:3},
+	{r:-1, q:-1, t:2, o:1},
+	{r:-1, q:0, t:8, o:1},
+	{r:-1, q:1, t:1, o:2},
+	{r:-1, q:2, t:7, o:2},
+	{r:0, q:-2, t:1, o:1},
+	{r:0, q:-1, t:10, o:2},
+	{r:0, q:0, t:12, o:0},
+	{r:0, q:1, t:11, o:0},
+	{r:0, q:2, t:5, o:4},
+	{r:1, q:-2, t:9, o:1},
+	{r:1, q:-1, t:13, o:0},
+	{r:1, q:0, t:8, o:1},
+	{r:1, q:1, t:4, o:5},
+	{r:2, q:-2, t:2, o:5},
+	{r:2, q:-1, t:3, o:0},
+	{r:2, q:0, t:5, o:5},
 ];
 */
 
+/*
 // harder!
 pieces = [ 
-	{r:-2, q:0, type:1, offset:0},
-	{r:-2, q:1, type:5, offset:3},
-	{r:-2, q:2, type:2, offset:2},
-	{r:-1, q:-1, type:5, offset:2},
-	{r:-1, q:0, type:3, offset:5},
-	{r:-1, q:1, type:2, offset:5},
-	{r:-1, q:2, type:3, offset:4},
-	{r:0, q:-2, type:1, offset:5},
-	{r:0, q:-1, type:10, offset:2},
-	{r:0, q:0, type:7, offset:1},
-	{r:0, q:1, type:11, offset:0},
-	{r:0, q:2, type:2, offset:3},
-	{r:1, q:-2, type:5, offset:1},
-	{r:1, q:-1, type:12, offset:4},
-	{r:1, q:0, type:10, offset:5},
-	{r:1, q:1, type:1, offset:5},
-	{r:2, q:-2, type:2, offset:5},
-	{r:2, q:-1, type:3, offset:0},
-	{r:2, q:0, type:2, offset:4},
+	{r:-2, q:0, t:1, o:0},
+	{r:-2, q:1, t:5, o:3},
+	{r:-2, q:2, t:2, o:2},
+	{r:-1, q:-1, t:5, o:2},
+	{r:-1, q:0, t:3, o:5},
+	{r:-1, q:1, t:2, o:5},
+	{r:-1, q:2, t:3, o:4},
+	{r:0, q:-2, t:1, o:5},
+	{r:0, q:-1, t:10, o:2},
+	{r:0, q:0, t:7, o:1},
+	{r:0, q:1, t:11, o:0},
+	{r:0, q:2, t:2, o:3},
+	{r:1, q:-2, t:5, o:1},
+	{r:1, q:-1, t:12, o:4},
+	{r:1, q:0, t:10, o:5},
+	{r:1, q:1, t:1, o:5},
+	{r:2, q:-2, t:2, o:5},
+	{r:2, q:-1, t:3, o:0},
+	{r:2, q:0, t:2, o:4},
 ];
-
+*/
 
 /*
 // cute
 pieces = [
-	{r:-2, q:0, type:1, offset:1}, 
-	{r:-2, q:1, type:3, offset:2}, 
-	{r:-2, q:2, type:3, offset:3}, 
-	{r:-1, q:-1, type:2, offset:2}, 
-	{r:-1, q:0, type:11, offset:2}, 
-	{r:-1, q:1, type:1, offset:2}, 
-	{r:-1, q:2, type:7, offset:2}, 
-	{r:0, q:-2, type:5, offset:1}, 
-	{r:0, q:-1, type:12, offset:5}, 
-	{r:0, q:0, type:5, offset:0}, 
-	{r:0, q:1, type:6, offset:0}, 
-	{r:0, q:2, type:2, offset:4}, 
-	{r:1, q:-2, type:5, offset:0}, 
-	{r:1, q:-1, type:10, offset:4}, 
-	{r:1, q:0, type:7, offset:1}, 
-	{r:1, q:1, type:2, offset:3}, 
-	{r:2, q:-2, type:2, offset:0}, 
-	{r:2, q:-1, type:4, offset:0}, 
-	{r:2, q:0, type:5, offset:5};
+	{r:-2, q:0, t:1, o:1}, 
+	{r:-2, q:1, t:3, o:2}, 
+	{r:-2, q:2, t:3, o:3}, 
+	{r:-1, q:-1, t:2, o:2}, 
+	{r:-1, q:0, t:11, o:2}, 
+	{r:-1, q:1, t:1, o:2}, 
+	{r:-1, q:2, t:7, o:2}, 
+	{r:0, q:-2, t:5, o:1}, 
+	{r:0, q:-1, t:12, o:5}, 
+	{r:0, q:0, t:5, o:0}, 
+	{r:0, q:1, t:6, o:0}, 
+	{r:0, q:2, t:2, o:4}, 
+	{r:1, q:-2, t:5, o:0}, 
+	{r:1, q:-1, t:10, o:4}, 
+	{r:1, q:0, t:7, o:1}, 
+	{r:1, q:1, t:2, o:3}, 
+	{r:2, q:-2, t:2, o:0}, 
+	{r:2, q:-1, t:4, o:0}, 
+	{r:2, q:0, t:5, o:5};
 ];
 */
 /*
 // pretty
 pieces = [
-	{"q":3,"r":-3,"offset":0,"type":5},
-	{"q":2,"r":-3,"offset":2,"type":11},
-	{"q":1,"r":-3,"offset":2,"type":11},
-	{"q":3,"r":-2,"offset":0,"type":11},
-	{"q":3,"r":-1,"offset":0,"type":11},
-	{"q":3,"r":0,"offset":1,"type":5},
-	{"q":2,"r":1,"offset":1,"type":11},
-	{"q":1,"r":2,"offset":1,"type":11},
-	{"q":0,"r":3,"offset":2,"type":5},
-	{"q":-1,"r":3,"offset":2,"type":11},
-	{"q":-2,"r":3,"offset":2,"type":11},
-	{"q":-3,"r":3,"offset":3,"type":5},
-	{"q":-3,"r":2,"offset":0,"type":11},
-	{"q":-3,"r":1,"offset":0,"type":11},
-	{"q":-2,"r":-1,"offset":1,"type":11},
-	{"q":-3,"r":0,"offset":4,"type":5},
-	{"q":-1,"r":-2,"offset":1,"type":11},
-	{"q":0,"r":-3,"offset":5,"type":5},
-	{"q":-1,"r":-3,"offset":1,"type":2},
-	{"q":-2,"r":-2,"offset":1,"type":2},
-	{"q":-3,"r":-1,"offset":1,"type":2},
-	{"q":-4,"r":0,"offset":0,"type":1},
-	{"q":-4,"r":1,"offset":0,"type":2},
-	{"q":-4,"r":2,"offset":0,"type":2},
-	{"q":-4,"r":3,"offset":0,"type":2},
-	{"q":-3,"r":4,"offset":5,"type":2},
-	{"q":-4,"r":4,"offset":5,"type":1},
-	{"q":-2,"r":4,"offset":5,"type":2},
-	{"q":0,"r":4,"offset":4,"type":1},
-	{"q":-1,"r":4,"offset":5,"type":2},
-	{"q":1,"r":3,"offset":4,"type":2},
-	{"q":2,"r":2,"offset":4,"type":2},
-	{"q":3,"r":1,"offset":4,"type":2},
-	{"q":4,"r":0,"offset":3,"type":1},
-	{"q":4,"r":-1,"offset":3,"type":2},
-	{"q":4,"r":-2,"offset":3,"type":2},
-	{"q":4,"r":-3,"offset":3,"type":2},
-	{"q":4,"r":-4,"offset":2,"type":1},
-	{"q":3,"r":-4,"offset":2,"type":2},
-	{"q":2,"r":-4,"offset":2,"type":2},
-	{"q":1,"r":-4,"offset":2,"type":2},
-	{"q":0,"r":-4,"offset":1,"type":1},
-	{"q":0,"r":-2,"offset":5,"type":3},
-	{"q":1,"r":-2,"offset":5,"type":2},
-	{"q":2,"r":-2,"offset":0,"type":3},
-	{"q":2,"r":-1,"offset":0,"type":2},
-	{"q":2,"r":0,"offset":1,"type":3},
-	{"q":1,"r":1,"offset":1,"type":2},
-	{"q":0,"r":2,"offset":2,"type":3},
-	{"q":-1,"r":2,"offset":2,"type":2},
-	{"q":-2,"r":2,"offset":3,"type":3},
-	{"q":-2,"r":1,"offset":3,"type":2},
-	{"q":-2,"r":0,"offset":4,"type":3},
-	{"q":-1,"r":-1,"offset":4,"type":2},
-	{"q":4,"r":-3,"offset":3,"type":2}]
+	{q:3,r:-3,o:0,t:5},
+	{q:2,r:-3,o:2,t:11},
+	{q:1,r:-3,o:2,t:11},
+	{q:3,r:-2,o:0,t:11},
+	{q:3,r:-1,o:0,t:11},
+	{q:3,r:0,o:1,t:5},
+	{q:2,r:1,o:1,t:11},
+	{q:1,r:2,o:1,t:11},
+	{q:0,r:3,o:2,t:5},
+	{q:-1,r:3,o:2,t:11},
+	{q:-2,r:3,o:2,t:11},
+	{q:-3,r:3,o:3,t:5},
+	{q:-3,r:2,o:0,t:11},
+	{q:-3,r:1,o:0,t:11},
+	{q:-2,r:-1,o:1,t:11},
+	{q:-3,r:0,o:4,t:5},
+	{q:-1,r:-2,o:1,t:11},
+	{q:0,r:-3,o:5,t:5},
+	{q:-1,r:-3,o:1,t:2},
+	{q:-2,r:-2,o:1,t:2},
+	{q:-3,r:-1,o:1,t:2},
+	{q:-4,r:0,o:0,t:1},
+	{q:-4,r:1,o:0,t:2},
+	{q:-4,r:2,o:0,t:2},
+	{q:-4,r:3,o:0,t:2},
+	{q:-3,r:4,o:5,t:2},
+	{q:-4,r:4,o:5,t:1},
+	{q:-2,r:4,o:5,t:2},
+	{q:0,r:4,o:4,t:1},
+	{q:-1,r:4,o:5,t:2},
+	{q:1,r:3,o:4,t:2},
+	{q:2,r:2,o:4,t:2},
+	{q:3,r:1,o:4,t:2},
+	{q:4,r:0,o:3,t:1},
+	{q:4,r:-1,o:3,t:2},
+	{q:4,r:-2,o:3,t:2},
+	{q:4,r:-3,o:3,t:2},
+	{q:4,r:-4,o:2,t:1},
+	{q:3,r:-4,o:2,t:2},
+	{q:2,r:-4,o:2,t:2},
+	{q:1,r:-4,o:2,t:2},
+	{q:0,r:-4,o:1,t:1},
+	{q:0,r:-2,o:5,t:3},
+	{q:1,r:-2,o:5,t:2},
+	{q:2,r:-2,o:0,t:3},
+	{q:2,r:-1,o:0,t:2},
+	{q:2,r:0,o:1,t:3},
+	{q:1,r:1,o:1,t:2},
+	{q:0,r:2,o:2,t:3},
+	{q:-1,r:2,o:2,t:2},
+	{q:-2,r:2,o:3,t:3},
+	{q:-2,r:1,o:3,t:2},
+	{q:-2,r:0,o:4,t:3},
+	{q:-1,r:-1,o:4,t:2},
+	{q:4,r:-3,o:3,t:2}]
 */
+
+// very pretty!
+pieces = [{r:-2,q:2,t:1,o:5},{r:-2,q:0,t:1,o:4},{r:2,q:-2,t:1,o:2},{r:2,q:0,t:1,o:1},{r:0,q:2,t:1,o:0},{r:-3,q:3,t:9,o:4},{r:-3,q:0,t:9,o:3},{r:0,q:-3,t:9,o:2},{r:3,q:-3,t:9,o:1},{r:3,q:0,t:9,o:0},{r:0,q:3,t:9,o:5},{r:-4,q:4,t:9,o:1},{r:-4,q:0,t:9,o:0},{r:0,q:-4,t:9,o:5},{r:4,q:-4,t:9,o:4},{r:4,q:0,t:9,o:3},{r:0,q:4,t:9,o:2},{r:-5,q:0,t:1,o:1},{r:-5,q:5,t:1,o:2},{r:0,q:5,t:1,o:3},{r:5,q:0,t:1,o:4},{r:5,q:-5,t:1,o:5},{r:0,q:-5,t:1,o:0},{r:-1,q:-4,t:5,o:1},{r:-2,q:-3,t:6,o:3},{r:-3,q:-2,t:7,o:5},{r:-4,q:-1,t:3,o:2},{r:-3,q:-1,t:2,o:1},{r:-2,q:-2,t:11,o:1},{r:-1,q:-3,t:2,o:3},{r:1,q:-5,t:3,o:1},{r:2,q:-5,t:7,o:4},{r:3,q:-5,t:6,o:2},{r:4,q:-5,t:5,o:0},{r:5,q:-4,t:3,o:0},{r:5,q:-3,t:7,o:3},{r:5,q:-2,t:6,o:1},{r:5,q:-1,t:5,o:5},{r:4,q:1,t:3,o:5},{r:3,q:2,t:7,o:2},{r:2,q:3,t:6,o:0},{r:1,q:4,t:5,o:4},{r:-1,q:5,t:3,o:4},{r:-2,q:5,t:7,o:1},{r:-3,q:5,t:6,o:5},{r:-4,q:5,t:5,o:3},{r:-5,q:4,t:3,o:3},{r:-5,q:3,t:7,o:0},{r:-5,q:2,t:6,o:4},{r:-5,q:1,t:5,o:2},{r:-4,q:1,t:2,o:4},{r:-4,q:2,t:11,o:2},{r:-4,q:3,t:2,o:2},{r:-3,q:4,t:2,o:5},{r:-2,q:4,t:11,o:0},{r:-1,q:4,t:2,o:3},{r:1,q:3,t:2,o:0},{r:2,q:2,t:11,o:1},{r:3,q:1,t:2,o:4},{r:4,q:-1,t:2,o:1},{r:4,q:-2,t:11,o:2},{r:4,q:-3,t:2,o:5},{r:3,q:-4,t:2,o:2},{r:2,q:-4,t:11,o:0},{r:1,q:-4,t:2,o:0},{r:-1,q:-2,t:3,o:4},{r:-2,q:-1,t:5,o:5},{r:-3,q:1,t:3,o:5},{r:-3,q:2,t:5,o:0},{r:-2,q:3,t:3,o:0},{r:-1,q:3,t:5,o:1},{r:1,q:2,t:3,o:1},{r:2,q:1,t:5,o:2},{r:3,q:-1,t:3,o:2},{r:3,q:-2,t:5,o:3},{r:2,q:-3,t:3,o:3},{r:1,q:-3,t:5,o:4},{r:0,q:-2,t:1,o:3},{r:-4,q:-2,t:2,o:2},{r:-3,q:-3,t:4,o:2},{r:-2,q:-4,t:2,o:0},{r:2,q:-6,t:2,o:1},{r:3,q:-6,t:4,o:1},{r:4,q:-6,t:2,o:5},{r:4,q:2,t:2,o:5},{r:3,q:3,t:4,o:2},{r:2,q:4,t:2,o:3},{r:-2,q:6,t:2,o:4},{r:-4,q:6,t:2,o:2},{r:-3,q:6,t:4,o:1},{r:-6,q:4,t:2,o:3},{r:-6,q:3,t:4,o:0},{r:-6,q:2,t:2,o:1},{r:6,q:-2,t:2,o:4},{r:6,q:-3,t:4,o:0},{r:6,q:-4,t:2,o:0}];
+
+
+//pieces = [{r:-1,q:0,t:3,o:4},{r:-1,q:1,t:3,o:1},{r:0,q:-1,t:3,o:5},{r:0,q:1,t:3,o:0},{r:1,q:-1,t:3,o:2},{r:1,q:0,t:3,o:3},{r:0,q:2,t:7,o:1},{r:-2,q:2,t:6,o:5},{r:-2,q:0,t:7,o:5},{r:0,q:-2,t:6,o:3},{r:2,q:-2,t:7,o:3},{r:2,q:0,t:6,o:1},{r:0,q:3,t:2,o:3},{r:-3,q:3,t:2,o:3},{r:-3,q:0,t:2,o:1},{r:0,q:-3,t:2,o:1},{r:2,q:-3,t:10,o:2},{r:3,q:-3,t:2,o:5},{r:3,q:0,t:2,o:5},{r:2,q:1,t:10,o:3},{r:3,q:-1,t:9,o:4},{r:3,q:-2,t:9,o:2},{r:1,q:-3,t:10,o:5},{r:-1,q:-2,t:9,o:0},{r:-2,q:-1,t:9,o:4},{r:-3,q:1,t:10,o:4},{r:-3,q:2,t:10,o:1},{r:-2,q:3,t:9,o:2},{r:-1,q:3,t:9,o:0},{r:1,q:2,t:10,o:0},{r:2,q:-1,t:2,o:2},{r:-1,q:-1,t:2,o:4},{r:-1,q:2,t:2,o:0},{r:-4,q:4,t:1,o:1},{r:-4,q:0,t:1,o:2},{r:0,q:-4,t:1,o:5},{r:4,q:-4,t:1,o:0},{r:4,q:0,t:1,o:3},{r:0,q:4,t:1,o:4},{r:-4,q:2,t:4,o:0},{r:-4,q:3,t:2,o:3},{r:-3,q:4,t:3,o:4},{r:-2,q:4,t:2,o:3},{r:-1,q:4,t:3,o:3},{r:1,q:3,t:2,o:3},{r:2,q:2,t:4,o:2},{r:3,q:1,t:2,o:5},{r:4,q:-1,t:3,o:0},{r:4,q:-2,t:2,o:5},{r:4,q:-3,t:3,o:5},{r:3,q:-4,t:2,o:5},{r:2,q:-4,t:4,o:1},{r:1,q:-4,t:2,o:1},{r:-1,q:-3,t:3,o:2},{r:-2,q:-2,t:2,o:1},{r:-3,q:-1,t:3,o:1},{r:-4,q:1,t:2,o:1}];
 
 
 var board = d3.select("body")
@@ -307,9 +314,9 @@ d3.selectAll(".button-rect")
 	.attr("rx","6px")
 	.attr("ry","6px");
 
-//scramble();
+scramble();
 updateDrawnPieces();
-//scramble();
+scramble();
 checkWin();
 
 function updateDrawnPieces()
@@ -408,33 +415,33 @@ function dragended(data)
 	}
 	if (valid)
 	{
-		var sig = pieceSignature[data.type];
+		var sig = pieceSignature[data.t];
 		var newsig = []
 		for (var j = 0; j<6; j++)
-			newsig.push(sig[(j+data.offset)%6]);
+			newsig.push(sig[(j+data.o)%6]);
 		var createEdge = newsig[i] = !newsig[i];
-		findType(data, newsig);
+		findt(data, newsig);
 		
-		sig = pieceSignature[nbrdata.type];
+		sig = pieceSignature[nbrdata.t];
 		newsig = []
 		for (var j = 0; j<6; j++)
-			newsig.push(sig[(j+nbrdata.offset)%6]);
+			newsig.push(sig[(j+nbrdata.o)%6]);
 		newsig[(i+3)%6] = createEdge;
-		findType(nbrdata, newsig);
+		findt(nbrdata, newsig);
 		
 		nbrselection.select(".piece-path").attr("d", function(d) {return pathSpecification(d, -1);});
-		nbrselection.select(".piece-inner").attr("transform", "rotate("+(nbrdata.offset*60)+")");
+		nbrselection.select(".piece-inner").attr("transform", "rotate("+(nbrdata.o*60)+")");
 	}
 	
 	d3.select(this).select(".piece-path").attr("d", function(d) {return pathSpecification(d, -1);});
-	d3.select(this).select(".piece-inner").attr("transform", "rotate("+(data.offset*60)+")");
+	d3.select(this).select(".piece-inner").attr("transform", "rotate("+(data.o*60)+")");
 }
 
-function findType(d, signature)
+function findt(d, signature)
 {
-	for (var type = 0; type < pieceSignature.length; type++)
+	for (var t = 0; t < pieceSignature.length; t++)
 	{
-		var testsig = pieceSignature[type];
+		var testsig = pieceSignature[t];
 		for (var offset = 0; offset < 6; offset++)
 		{
 			var success = true;
@@ -448,8 +455,8 @@ function findType(d, signature)
 			}
 			if (success)
 			{
-				d.type = type;
-				d.offset = offset;
+				d.t = t;
+				d.o = offset;
 				return;
 			}
 		}
@@ -461,9 +468,9 @@ function scramble()
 	board.selectAll(".piece-inner")
 		.each(function(d)
 		{
-			var oldoffset = d.offset;
-			d.offset = Math.floor(6*Math.random());
-			var diff = Math.abs(d.offset-oldoffset);
+			var oldoffset = d.o;
+			d.o = Math.floor(6*Math.random());
+			var diff = Math.abs(d.o-oldoffset);
 			var time = 225*(Math.min(diff, 6-diff));
 			rotate.call(this, d, time);
 		});
@@ -475,25 +482,25 @@ function id(coord)    { return "#r"+coord.r+"q"+coord.q; }
 
 function pathSpecification(d, angle)
 {
-	var sig = pieceSignature[d.type];
+	var sig = pieceSignature[d.t];
 	var pathSpec = "";
-	if (d.type == 1 && angle < 0)
+	if (d.t == 1 && angle < 0)
 	{
 		pathSpec = "M"+p2cstring(0,0,1,0) + " L "+p2cstring(0,0,.2,0)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,1);
 	}
-	else if (d.type == 0 && angle >= 0)
+	else if (d.t == 0 && angle >= 0)
 	{
-		pathSpec = "M"+p2cstring(0,0,1,angle+60*d.offset) + " L "+p2cstring(0,0,.2,angle+60*d.offset)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,angle+60*d.offset+1);
+		pathSpec = "M"+p2cstring(0,0,1,angle+60*d.o) + " L "+p2cstring(0,0,.2,angle+60*d.o)+" A .2,.2 0 1 1"+p2cstring(0,0,.2,angle+60*d.o+1);
 	}
-	else if (d.type != 0 || angle >= 0)
+	else if (d.t != 0 || angle >= 0)
 	{
 		pathSpec = "M";
 		for (var i = 0; i<6; i++)
 		{
 			if (sig[i])
 				pathSpec += p2cstring(0,0,1,i*60) + " Q 0,0";
-			if (angle >= 0 && 60*i < (angle+60*d.offset)%360 && (angle+60*d.offset)%360 < 60*(i+1))
-				pathSpec += p2cstring(0,0,1,angle+60*d.offset) + " Q 0,0";
+			if (angle >= 0 && 60*i < (angle+60*d.o)%360 && (angle+60*d.o)%360 < 60*(i+1))
+				pathSpec += p2cstring(0,0,1,angle+60*d.o) + " Q 0,0";
 		}
 		pathSpec += p2cstring(0,0,1,0);
 	}
@@ -507,7 +514,7 @@ function createPiece(d)
 		.attr("transform", "translate("+p2cstring(2*d.q, 0, 2*d.r, -60)+")")
 		.append("g")
 		.classed("piece-inner", true)
-		.attr("transform", "rotate("+(d.offset*60)+")");
+		.attr("transform", "rotate("+(d.o*60)+")");
 	piece.append("circle")
 		.classed("piece-background", true)
 		.attr("cx", "0")
@@ -536,10 +543,10 @@ function nbrsOf(coord)
 function isSatisfied(d)
 {
 	var nbrs = nbrsOf(d);
-	var sig = pieceSignature[d.type];
+	var sig = pieceSignature[d.t];
 	for (var i = 0; i < 6; i++)
 	{
-		var hasEdge = sig[(i+d.offset)%6];
+		var hasEdge = sig[(i+d.o)%6];
 		if (hasEdge)
 		{
 			var nbr = nbrs[i];
@@ -547,8 +554,8 @@ function isSatisfied(d)
 			if (nbrnode == null)
 				return false;
 			var nbrdata = nbrnode.__data__;
-			var nbrsig = pieceSignature[nbrdata.type];
-			var hasMatchingEdge = nbrsig[(i+3+nbrdata.offset)%6];
+			var nbrsig = pieceSignature[nbrdata.t];
+			var hasMatchingEdge = nbrsig[(i+3+nbrdata.o)%6];
 			if (!hasMatchingEdge)
 				return false;
 		}
@@ -559,9 +566,9 @@ function isSatisfied(d)
 function pieceOnClick(d)
 {
 	if (d3.event.shiftKey)
-		d.offset = (d.offset+5)%6;
+		d.o = (d.o+5)%6;
 	else
-		d.offset = (d.offset+1)%6;
+		d.o = (d.o+1)%6;
 	rotate.call(this, d, 200);
 	d3.event.preventDefault();
 	d3.event.stopPropagation();
@@ -575,7 +582,7 @@ function rotate(d, time)
 	{
 		d3.select(this)
 			.transition()
-			.attr("transform", "rotate("+(d.offset*60)+")")
+			.attr("transform", "rotate("+(d.o*60)+")")
 			.duration(time)
 			.ease(d3.easeLinear);
 			
@@ -583,7 +590,7 @@ function rotate(d, time)
 	else
 	{
 		d3.select(this)
-			.attr("transform", "rotate("+(d.offset*60)+")");
+			.attr("transform", "rotate("+(d.o*60)+")");
 	}
 }
 
@@ -619,9 +626,10 @@ function setEventListeners()
 	{
 		board.selectAll(".piece-inner")
 			.on("click", null)
-			.on("touchend", function() { deletePieceAt(d3.event); });
+			.on("touchend", null);
 		board.selectAll(".piece")
-			.on("dblclick", function() { deletePieceAt(d3.event); })
+			.on("touchend", deletePiece)
+			.on("dblclick", deletePiece)
 			.call(d3.drag()
 				.on("start", dragstarted)
 				.on("drag", dragged)
@@ -673,25 +681,21 @@ function newPieceAt(xycoord)
 {
 	var scaledCoord = scaleCoords(xycoord);
 	var data = coord2hex(scaledCoord);
-	if (document.getElementById(rawid(data)) != null) return
-	data.offset = data.type = 0;
+	if (document.getElementById(rawid(data)) != null) return;
+	data.o = data.t = 0;
 	pieces.push(data);
 	updateDrawnPieces();
 }
 
-function deletePieceAt(xycoord)
+function deletePiece(d)
 {
-	var scaledCoord = scaleCoords(xycoord);
-	var data = coord2hex(scaledCoord);
-	for (var i = 0; i < pieces.length; i++)
+	var index = pieces.indexOf(d)
+	if (index != -1)
 	{
-		if (pieces[i].r == data.r && pieces[i].q == data.q)
-		{
-			pieces.splice(i,1);
-			break;
-		}
+		pieces.splice(index,1);
+		updateDrawnPieces();
 	}
-	updateDrawnPieces();
+	d3.event.preventDefault();
 }
 
 // Convert polar coordinates to Cartesian
