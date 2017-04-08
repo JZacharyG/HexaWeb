@@ -1,6 +1,11 @@
 <html>
+<meta name="viewport" content="width=device-width">
 <title>HexaWeb</title>
 <style>
+
+@-ms-viewport{
+  width: device-width;
+}
 
 #board
 {
@@ -333,7 +338,7 @@ function resizeViewBox()
 	board.attr("viewBox", "" + (-width) + "," + (-height) + "," + (2*width) + "," + (2*height))
 }
 
-function dist(c1, c2) { return Math.sqrt((c1.x-c2.x)**2 + (c1.y-c2.y)**2); }
+function dist(c1, c2) { return Math.sqrt((c1.x-c2.x)*(c1.x-c2.x) + (c1.y-c2.y)*(c1.y-c2.y)); }
 
 function dragstarted(d)
 {
@@ -352,7 +357,7 @@ function scaleCoords(evt)
 
 function dragged(data)
 {
-	d3.selectAll(".piece").select(".piece-path").attr("d", function(d) {return pathSpecification(d);});
+	d3.selectAll(".piece").select(".piece-path").attr("d", function(d) {return pathSpecification(d, -1);});
 	var center = p2c(2*data.q, 0, 2*data.r, -60);
 	if (dist(center, d3.event) >= 1)
 	{
@@ -417,11 +422,11 @@ function dragended(data)
 		newsig[(i+3)%6] = createEdge;
 		findType(nbrdata, newsig);
 		
-		nbrselection.select(".piece-path").attr("d", function(d) {return pathSpecification(d);});
+		nbrselection.select(".piece-path").attr("d", function(d) {return pathSpecification(d, -1);});
 		nbrselection.select(".piece-inner").attr("transform", "rotate("+(nbrdata.offset*60)+")");
 	}
 	
-	d3.select(this).select(".piece-path").attr("d", function(d) {return pathSpecification(d);});
+	d3.select(this).select(".piece-path").attr("d", function(d) {return pathSpecification(d, -1);});
 	d3.select(this).select(".piece-inner").attr("transform", "rotate("+(data.offset*60)+")");
 }
 
@@ -468,7 +473,7 @@ function scramble()
 function rawid(coord) { return  "r"+coord.r+"q"+coord.q; }
 function id(coord)    { return "#r"+coord.r+"q"+coord.q; }
 
-function pathSpecification(d, angle = -1)
+function pathSpecification(d, angle)
 {
 	var sig = pieceSignature[d.type];
 	var pathSpec = "";
@@ -510,7 +515,7 @@ function createPiece(d)
 		.attr("r", "1");
 	var path = piece.append("path")
 		.classed("piece-path", true)
-		.attr("d", function(d) {return pathSpecification(d);});
+		.attr("d", function(d) {return pathSpecification(d, -1);});
 }
 
 // expects an object with row and column entries r and q
@@ -557,14 +562,14 @@ function pieceOnClick(d)
 		d.offset = (d.offset+5)%6;
 	else
 		d.offset = (d.offset+1)%6;
-	rotate.call(this, d);
+	rotate.call(this, d, 200);
 	d3.event.preventDefault();
 	d3.event.stopPropagation();
 	checkWin();
 }
 
 // visually rotate piece to match its offset
-function rotate(d, time = 225)
+function rotate(d, time)
 {
 	if (time > 0)
 	{
@@ -614,7 +619,7 @@ function setEventListeners()
 	{
 		board.selectAll(".piece-inner")
 			.on("click", null)
-			.on("touchend", null);
+			.on("touchend", function() { deletePieceAt(d3.event); });
 		board.selectAll(".piece")
 			.on("dblclick", function() { deletePieceAt(d3.event); })
 			.call(d3.drag()
