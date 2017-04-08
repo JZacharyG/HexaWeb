@@ -36,6 +36,45 @@
     transition: stroke .2s;
 }
 */
+
+.button
+{
+	position:fixed;
+	pointer-events: none;
+}
+
+.button .button-rect
+{
+	fill: #ddd;
+	stroke: #aaa;
+	stroke-width: 3px;
+	pointer-events: all;
+	-webkit-transition: stroke .2s, fill .2s;
+	-moz-transition: stroke .2s, fill .2s;
+    transition: stroke .2s, fill .2s;
+}
+
+.button.enabled .button-rect {
+	stroke: #aaa;
+	fill: white;
+}
+
+.button.enabled.selected .button-rect {
+	stroke: #fc0;
+	fill: #ffeb99;
+}
+
+.button .button-path {
+	stroke: black;
+	stroke-width: 2.5px;
+	fill: none;
+	pointer-events: none;
+}
+
+#scramble { right: 5px; bottom: 5px; }
+#edit     { right: 5px; bottom: 45px; }
+#clear    { right: 45px; bottom: 5px; }
+
 </style>
 <body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -195,11 +234,79 @@ pieces = [
 var board = d3.select("body")
 	.append("svg")
 	.attr("id", "board");
-//	.on("click", function() { newPieceAt(d3.event); });
 //	.attr("preserveAspectRatio", "xMidYMid meet");
-scramble();
+
+var editButton = d3.select("body")
+	.append("svg")
+	.attr("id", "edit")
+	.classed("button",true);
+editButton.append("rect")
+	.classed("button-rect", true)
+	.on("click", editButtonPress);
+editButton.append("path")
+	.classed("button-path", true)
+	.attr("d","M -13,-6 L 13,-6 M -13,6 L 13,6");
+editButton.append("path")
+	.classed("button-path", true)
+	.style("fill", "black")
+	.attr("d","M 3,-9 L 3,-3 L 5,-3 L 5,-9 L 3,-9");
+editButton.append("path")
+	.classed("button-path", true)
+	.style("fill", "black")
+	.attr("d","M -9,9 L -9,3 L -7,3 L -7,9 L -9,9");
+
+var scrambleButton = d3.select("body")
+	.append("svg")
+	.attr("id", "scramble")
+	.classed("button enabled",true);
+scrambleButton.append("rect")
+	.classed("button-rect", true)
+	.on("click", scrambleButtonPress);
+scrambleButton.append("path")
+	.classed("button-path", true)
+	.attr("d","M -13,-6 C 0,-6 -3,6 10,6 l 3,0 l -3.5,3.5 m 0,-7 l 3.5,3.5");
+scrambleButton.append("path")
+	.classed("button-path", true)
+	.style("stroke","white")
+	.style("stroke-width","5px")
+	.attr("d","M -13,6 C 0,6 -3,-6 10,-6 l 3,0 l -3.5,3.5 m 0,-7 l 3.5,3.5");
+scrambleButton.append("path")
+	.classed("button-path", true)
+	.attr("d","M -13,6 C 0,6 -3,-6 10,-6 l 3,0 l -3.5,3.5 m 0,-7 l 3.5,3.5");
+
+var clearButton = d3.select("body")
+	.append("svg")
+	.attr("id", "clear")
+	.classed("button enabled",true);
+clearButton.append("rect")
+	.classed("button-rect", true)
+	.on("click", function () {pieces.length = 0; updateDrawnPieces(); checkWin(); });
+clearButton.append("path")
+	.classed("button-path", true)
+	.attr("d","M -9.1924 9.1924 L 9.1924 -9.1924 M -9.1924 -9.1924 L 9.1924 9.1924");
+
+d3.selectAll(".button")
+	.attr("viewBox", "-20 -20 40 40 ")
+	.attr("width", "35")
+	.attr("height", "35");
+
+d3.selectAll(".button-path")
+	.attr("stroke-linecap","round")
+ 	.attr("stroke-linejoin","round");
+
+d3.selectAll(".button-rect")
+	.attr("x","-18.5px")
+	.attr("y","-18.5px")
+	.attr("width","37px")
+	.attr("height","37px")
+	.attr("rx","6px")
+	.attr("ry","6px");
+
+//scramble();
 updateDrawnPieces();
-scramble();
+//scramble();
+checkWin();
+
 function updateDrawnPieces()
 {
 	var piecesSelection = board.selectAll(".piece")
@@ -208,18 +315,15 @@ function updateDrawnPieces()
 		.append("g")
 		.classed("piece", true)
 		.each(createPiece);
-// 		.call(d3.drag()
-// 		.on("start", dragstarted)
-// 		.on("drag", dragged)
-// 		.on("end", dragended));
 	piecesSelection.exit()
 		.remove();
 	resizeViewBox();
+	setEventListeners();
 }
 
 function resizeViewBox()
 {
-	var width = 0, height = 0;
+	var width = 1.5, height = 1.5;
 	for (d of pieces)
 	{
 		var center = p2c(2*d.q, 0, 2*d.r, -60);
@@ -358,7 +462,7 @@ function scramble()
 			var time = 225*(Math.min(diff, 6-diff));
 			rotate.call(this, d, time);
 		});
-	if (checkWin()) onWin();
+	checkWin();
 }
 
 function rawid(coord) { return  "r"+coord.r+"q"+coord.q; }
@@ -398,9 +502,7 @@ function createPiece(d)
 		.attr("transform", "translate("+p2cstring(2*d.q, 0, 2*d.r, -60)+")")
 		.append("g")
 		.classed("piece-inner", true)
-		.attr("transform", "rotate("+(d.offset*60)+")")
-		.on("click", pieceOnClick)
-		.on("touchend", pieceOnClick);
+		.attr("transform", "rotate("+(d.offset*60)+")");
 	piece.append("circle")
 		.classed("piece-background", true)
 		.attr("cx", "0")
@@ -458,7 +560,7 @@ function pieceOnClick(d)
 	rotate.call(this, d);
 	d3.event.preventDefault();
 	d3.event.stopPropagation();
-	if (checkWin()) onWin();
+	checkWin();
 }
 
 // visually rotate piece to match its offset
@@ -482,17 +584,84 @@ function rotate(d, time = 225)
 
 function checkWin()
 {
+	var win = true;
 	for (var piece of pieces)
 	{
 		if (!isSatisfied(piece))
-			return false;
+		{
+			win = false;
+			break;
+		}
 	}
-	return true;
+	if (win)
+	{
+		editButton.classed("enabled", true);
+	}
+	else
+	{
+		editButton.classed("enabled", false);
+	}
 }
 
 function onWin()
 {
 	console.log("Good job, friend!");
+}
+
+function setEventListeners()
+{
+	if (editButton.classed("selected"))
+	{
+		board.selectAll(".piece-inner")
+			.on("click", null)
+			.on("touchend", null);
+		board.selectAll(".piece")
+			.on("dblclick", function() { deletePieceAt(d3.event); })
+			.call(d3.drag()
+				.on("start", dragstarted)
+				.on("drag", dragged)
+				.on("end", dragended));
+		board.on("click", function() { newPieceAt(d3.event); });
+	}
+	else
+	{
+		board.selectAll(".piece-inner")
+			.on("click", pieceOnClick)
+			.on("touchend", pieceOnClick);
+		board.selectAll(".piece")
+			.on("dblclick", null)
+			.call(d3.drag()
+				.on("start", null)
+				.on("drag", null)
+				.on("end", null));
+		board.on("click", null);
+	}
+}
+
+function scrambleButtonPress()
+{
+	if (!editButton.classed("selected"))
+		scramble();	
+}
+
+function editButtonPress()
+{
+	if (editButton.classed("enabled"))
+	{
+		var state = !editButton.classed("selected");
+		editButton.classed("selected", state);
+		setEventListeners();
+	}
+	else
+		console.log("error: editing disabled");
+}
+
+function setEnableButton(enabled)
+{
+	editButton.classed("enabled", enabled);
+	if (!enabled)
+		editButton.classed("selected", false);
+	setEventListeners();
 }
 
 function newPieceAt(xycoord)
