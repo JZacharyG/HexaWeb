@@ -77,8 +77,8 @@
 }
 
 #scramble { right: 5px; bottom: 5px; }
-#edit     { right: 5px; bottom:45px; }
-#clear    { right:45px; bottom: 5px; }
+#edit     { right:45px; bottom: 5px; }
+#new      { left: 85px; bottom: 5px; }
 #prev     { left:  5px; bottom: 5px; }
 #next     { left: 45px; bottom: 5px; }
 
@@ -199,16 +199,16 @@ scrambleButton.append("path")
 	.classed("button-path", true)
 	.attr("d","M -13,6 C 0,6 -3,-6 10,-6 l 3,0 l -3.5,3.5 m 0,-7 l 3.5,3.5");
 
-var clearButton = d3.select("body")
+var newButton = d3.select("body")
 	.append("svg")
-	.attr("id", "clear")
+	.attr("id", "new")
 	.classed("button enabled",true);
-clearButton.append("rect")
+newButton.append("rect")
 	.classed("button-rect", true)
-	.on("click", function () {pieces.length = 0; updateDrawnPieces(); checkWin(); });
-clearButton.append("path")
+	.on("click", newPuzzle);
+newButton.append("path")
 	.classed("button-path", true)
-	.attr("d","M -9.1924 9.1924 L 9.1924 -9.1924 M -9.1924 -9.1924 L 9.1924 9.1924");
+	.attr("d","M 0,13 L 0,-13 M -13,0 L 13,0");
 
 d3.selectAll(".button")
 	.attr("viewBox", "-20 -20 40 40 ")
@@ -238,12 +238,15 @@ function loadPuzzle()
 	board.selectAll(".piece").remove();
 	scramble();
 	updateDrawnPieces();
+	setEventListeners();
 	scramble();
 	checkWin();
 }
 
 function prevPuzzle()
 {
+	if (!prevButton.classed("enabled"))
+		return;
 	puzzleID = (puzzleID + puzzles.length - 1) % puzzles.length;
 	pieces = puzzles[puzzleID];
 	loadPuzzle();
@@ -251,9 +254,26 @@ function prevPuzzle()
 
 function nextPuzzle()
 {
+	if (!prevButton.classed("enabled"))
+		return;
 	puzzleID = (puzzleID + 1) % puzzles.length;
 	pieces = puzzles[puzzleID];
 	loadPuzzle();
+}
+
+function newPuzzle()
+{
+	if (!newButton.classed("enabled"))
+		return;
+	puzzleID = puzzles.length;
+	pieces = [{r:0,q:0,t:0,o:0}];
+	puzzles.push(pieces);
+	//loadPuzzle();
+	board.selectAll(".piece").remove();
+	updateDrawnPieces();
+	setEnableEditButton(true);
+	setEditMode(true);
+	setEventListeners();
 }
 
 function updateDrawnPieces()
@@ -545,7 +565,7 @@ function checkWin()
 	}
 	if (win)
 	{
-		editButton.classed("enabled", true);
+		setEnableEditButton(true);
 		board.selectAll(".piece-path")
 			.transition()
 				.style("fill", "#aea")
@@ -558,7 +578,7 @@ function checkWin()
 	}
 	else
 	{
-		editButton.classed("enabled", false);
+		setEnableEditButton(false);
 	}
 }
 
@@ -570,7 +590,7 @@ function setEventListeners()
 			.on("click", null)
 			.on("touchend", null);
 		board.selectAll(".piece")
-			.on("touchend", deletePiece)
+			//.on("touchend", deletePiece)
 			.on("dblclick", deletePiece)
 			.call(d3.drag()
 				.on("start", dragstarted)
@@ -595,28 +615,36 @@ function setEventListeners()
 
 function scrambleButtonPress()
 {
-	if (!editButton.classed("selected"))
+	if (scrambleButton.classed("enabled"))
 		scramble();	
 }
 
 function editButtonPress()
 {
-	if (editButton.classed("enabled"))
-	{
-		var state = !editButton.classed("selected");
-		editButton.classed("selected", state);
-		setEventListeners();
-	}
-	else
-		console.log("error: editing disabled");
+	if (!editButton.classed("enabled"))
+		return;
+	var state = !editButton.classed("selected");
+	setEditMode(state);
 }
 
-function setEnableButton(enabled)
+function setEnableEditButton(enabled)
 {
 	editButton.classed("enabled", enabled);
 	if (!enabled)
-		editButton.classed("selected", false);
+		setEditMode(false);
 	setEventListeners();
+}
+
+function setEditMode(state)
+{
+	if (!editButton.classed("enabled"))
+		return;
+	editButton.classed("selected", state);
+	setEventListeners();
+	nextButton.classed("enabled", !state);
+	prevButton.classed("enabled", !state);
+	newButton.classed("enabled", !state);
+	scrambleButton.classed("enabled", !state);
 }
 
 function newPieceAt(xycoord)
