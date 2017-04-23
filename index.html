@@ -33,15 +33,6 @@
 	fill: #aaa;
 }
 
-/* 
-.piece.satisfied .piece-background
-{
-	stroke: #ada;
-	-webkit-transition: stroke .2s;
-    transition: stroke .2s;
-}
-*/
-
 .button
 {
 	position:fixed;
@@ -59,21 +50,39 @@
     transition: stroke .2s, fill .2s;
 }
 
-.button.enabled .button-rect {
+.button.enabled .button-rect
+{
 	stroke: #aaa;
 	fill: white;
 }
 
-.button.enabled.selected .button-rect {
+.button.enabled.selected .button-rect
+{
 	stroke: #fc0;
 	fill: #ffeb99;
 }
 
-.button .button-path {
+.button .button-path
+{
 	stroke: black;
 	stroke-width: 2.5px;
 	fill: none;
 	pointer-events: none;
+}
+
+.button-path-mask
+{
+	stroke-width: 5px;
+	stroke: #ddd;
+	fill:none;
+	-webkit-transition: stroke .2s;
+	-moz-transition: stroke .2s;
+    transition: stroke .2s;
+}
+
+.button.enabled .button-path-mask
+{
+	stroke: white;
 }
 
 #scramble { right: 5px; bottom: 5px; }
@@ -134,6 +143,12 @@ var puzzles = [
 	[{r:-3,q:3,t:3,o:0},{r:-3,q:0,t:3,o:5},{r:0,q:-3,t:3,o:4},{r:3,q:-3,t:3,o:3},{r:3,q:0,t:3,o:2},{r:0,q:3,t:3,o:1},{r:-2,q:4,t:11,o:0},{r:-4,q:2,t:11,o:2},{r:-2,q:-2,t:11,o:1},{r:2,q:-4,t:11,o:0},{r:4,q:-2,t:11,o:2},{r:2,q:2,t:11,o:1},{r:3,q:-1,t:2,o:2},{r:2,q:1,t:2,o:1},{r:3,q:-2,t:2,o:2},{r:2,q:-3,t:2,o:3},{r:1,q:-3,t:2,o:3},{r:-1,q:-2,t:2,o:4},{r:-2,q:-1,t:2,o:4},{r:-3,q:1,t:2,o:5},{r:-3,q:2,t:2,o:5},{r:-2,q:3,t:2,o:0},{r:-1,q:3,t:2,o:0},{r:1,q:2,t:2,o:1},{r:-4,q:3,t:5,o:2},{r:-4,q:1,t:5,o:3},{r:-4,q:4,t:3,o:3},{r:-3,q:4,t:5,o:4},{r:-1,q:4,t:5,o:3},{r:0,q:4,t:3,o:4},{r:1,q:3,t:5,o:5},{r:3,q:1,t:5,o:4},{r:4,q:0,t:3,o:5},{r:4,q:-1,t:5,o:0},{r:4,q:-3,t:5,o:5},{r:4,q:-4,t:3,o:0},{r:3,q:-4,t:5,o:1},{r:1,q:-4,t:5,o:0},{r:0,q:-4,t:3,o:1},{r:-1,q:-3,t:5,o:2},{r:-3,q:-1,t:5,o:1},{r:-4,q:0,t:3,o:2},{r:-5,q:1,t:1,o:0},{r:-5,q:2,t:10,o:5},{r:-5,q:3,t:10,o:0},{r:-5,q:4,t:1,o:3},{r:-4,q:5,t:1,o:1},{r:-3,q:5,t:10,o:0},{r:-2,q:5,t:10,o:1},{r:-1,q:5,t:1,o:4},{r:1,q:4,t:1,o:2},{r:2,q:3,t:10,o:1},{r:3,q:2,t:10,o:2},{r:4,q:1,t:1,o:5},{r:5,q:-1,t:1,o:3},{r:5,q:-2,t:10,o:2},{r:5,q:-3,t:10,o:3},{r:5,q:-4,t:1,o:0},{r:4,q:-5,t:1,o:4},{r:3,q:-5,t:10,o:3},{r:2,q:-5,t:10,o:4},{r:1,q:-5,t:1,o:1},{r:-1,q:-4,t:1,o:5},{r:-2,q:-3,t:10,o:4},{r:-3,q:-2,t:10,o:5},{r:-4,q:-1,t:1,o:2},{r:-6,q:2,t:1,o:1},{r:-6,q:3,t:2,o:2},{r:-6,q:4,t:1,o:2},{r:-4,q:-2,t:1,o:1},{r:-3,q:-3,t:2,o:1},{r:-2,q:-4,t:1,o:0},{r:3,q:-6,t:2,o:0},{r:4,q:-6,t:1,o:5},{r:2,q:-6,t:1,o:0},{r:6,q:-4,t:1,o:5},{r:6,q:-3,t:2,o:5},{r:6,q:-2,t:1,o:4},{r:4,q:2,t:1,o:4},{r:3,q:3,t:2,o:4},{r:2,q:4,t:1,o:3},{r:-3,q:6,t:2,o:3},{r:-2,q:6,t:1,o:3},{r:-4,q:6,t:1,o:2},{r:-7,q:4,t:2,o:4},{r:-7,q:3,t:2,o:0},{r:-8,q:4,t:2,o:2},{r:-4,q:7,t:2,o:1},{r:-3,q:7,t:2,o:5},{r:-4,q:8,t:2,o:3},{r:4,q:3,t:2,o:0},{r:3,q:4,t:2,o:2},{r:4,q:4,t:2,o:4},{r:7,q:-4,t:2,o:1},{r:7,q:-3,t:2,o:3},{r:8,q:-4,t:2,o:5},{r:3,q:-7,t:2,o:2},{r:4,q:-7,t:2,o:4},{r:4,q:-8,t:2,o:0},{r:-3,q:-4,t:2,o:5},{r:-4,q:-3,t:2,o:3},{r:-4,q:-4,t:2,o:1}],
 ];
 
+// This is not ideal, should probably be part of the puzzles array... probably each puzzle should be an object, instead of just an array?
+var seen = [];
+seen.length = puzzles.length;
+seen.fill(false);
+
+
 var board = d3.select("body")
 	.append("svg")
 	.attr("id", "board");
@@ -191,9 +206,7 @@ scrambleButton.append("path")
 	.classed("button-path", true)
 	.attr("d","M -13,-6 C 0,-6 -3,6 10,6 l 3,0 l -3.5,3.5 m 0,-7 l 3.5,3.5");
 scrambleButton.append("path")
-	.classed("button-path", true)
-	.style("stroke","white")
-	.style("stroke-width","5px")
+	.classed("button-path-mask", true)
 	.attr("d","M -13,6 C 0,6 -3,-6 10,-6 l 3,0 l -3.5,3.5 m 0,-7 l 3.5,3.5");
 scrambleButton.append("path")
 	.classed("button-path", true)
@@ -215,7 +228,7 @@ d3.selectAll(".button")
 	.attr("width", "35")
 	.attr("height", "35");
 
-d3.selectAll(".button-path")
+d3.selectAll(".button-path,.button-path-mask")
 	.attr("stroke-linecap","round")
  	.attr("stroke-linejoin","round");
 
@@ -236,11 +249,14 @@ function loadPuzzle()
 {
 	console.log("Playing puzzle #" + puzzleID);
 	board.selectAll(".piece").remove();
-	scramble();
+	if (!seen[puzzleID])
+		scramble();
 	updateDrawnPieces();
 	setEventListeners();
-	scramble();
+	if (!seen[puzzleID])
+		scramble();
 	checkWin();
+	seen[puzzleID] = true;
 }
 
 function prevPuzzle()
@@ -268,6 +284,8 @@ function newPuzzle()
 	puzzleID = puzzles.length;
 	pieces = [{r:0,q:0,t:0,o:0}];
 	puzzles.push(pieces);
+	seen.push(true);
+	
 	//loadPuzzle();
 	board.selectAll(".piece").remove();
 	updateDrawnPieces();
