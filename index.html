@@ -302,8 +302,9 @@ function loadPuzzle()
 	if (!puzzles[puzzleIndex].seen)
 		scramble();
 	puzzles[puzzleIndex].seen = true;
-	setEventListeners();
-	moveMade();
+	
+	setEditMode(false);
+	onChange();
 	
 	deleteButton.classed("enabled", puzzles[puzzleIndex].id < 0);
 	prevButton.classed("enabled", puzzleIndex > 0);
@@ -335,8 +336,7 @@ function newPuzzle()
 	if (!newButton.classed("enabled"))
 		return;
 	puzzleIndex = puzzles.length;
-	pieces = [{r:0,q:0,t:0,o:0}];
-	puzzles.push({id:customID, pieces:pieces});
+	puzzles.push({id:customID, pieces:[{r:0,q:0,t:0,o:0}]});
 	customID--;
 	if (storage != null)
 		storage.setItem("customPuzzleID", customID)
@@ -610,7 +610,7 @@ function pieceOnClick(d)
 	rotate.call(this, d, 200);
 	d3.event.preventDefault();
 	d3.event.stopPropagation();
-	moveMade();
+	onChange();
 }
 
 // visually rotate piece to match its offset
@@ -632,7 +632,7 @@ function rotate(d, time)
 }
 
 // check if the puzzle is won, run animation if so, and store the state of the puzzle if possible
-function moveMade()
+function onChange()
 {
 	var win = true;
 	for (var piece of pieces)
@@ -700,7 +700,7 @@ function scrambleButtonPress()
 	if (!scrambleButton.classed("enabled"))
 		return;
 	scramble();
-	moveMade();	
+	onChange();	
 }
 
 function editButtonPress()
@@ -725,9 +725,6 @@ function setEditMode(state)
 		return;
 	editButton.classed("selected", state);
 	setEventListeners();
-	prevButton.classed("enabled", !state && puzzleIndex > 0);
-	nextButton.classed("enabled", !state && puzzleIndex < (puzzles.length - 1));
-	newButton.classed("enabled", !state);
 	scrambleButton.classed("enabled", !state);
 }
 
