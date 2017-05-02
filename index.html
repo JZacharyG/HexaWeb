@@ -368,10 +368,13 @@ function updateDrawnPieces()
 	piecesSelection.enter()
 		.append("g")
 		.classed("piece", true)
-		.each(createPiece);
+		.each(createPiece)
+		.merge(piecesSelection)
+		.each(drawPiece);
 		
 	piecesSelection.exit()
 		.remove();
+	
 	resizeViewBox();
 	setEventListeners();
 }
@@ -436,50 +439,24 @@ function dragged(data)
 	}
 }
 
-function dragended(data)
+function dragended(d)
 {
-	var nbrs = nbrsOf(data);
+	var nbrs = nbrsOf(d);
 	var valid = false;
-	var i, nbr, nbrdata, nbrselection;
+	var i, nbr;
 	for (i = 0; i<6; i++)
 	{
 		nbr = nbrs[i];
 		var center = p2c(2*nbr.q, 0, 2*nbr.r, -60);
 		if (dist(center, d3.event) <= 1)
 		{
-			nbrselection = board.select(id(nbr));
-			if (!nbrselection.empty())
-			{
-				nbrdata = nbrselection.datum();
-				valid = true;
-			}
+			writeConnection(d,i,!pieceSignature[d.t][b2p(d,i)]);
+			storePuzzle();
 			break;
 		}
 	}
-	if (valid)
-	{
-		var sig = pieceSignature[data.t];
-		var newsig = []
-		for (var j = 0; j<6; j++)
-			newsig.push(sig[(j+data.o)%6]);
-		var createEdge = newsig[i] = !newsig[i];
-		findt(data, newsig);
-		
-		sig = pieceSignature[nbrdata.t];
-		newsig = []
-		for (var j = 0; j<6; j++)
-			newsig.push(sig[(j+nbrdata.o)%6]);
-		newsig[(i+3)%6] = createEdge;
-		findt(nbrdata, newsig);
-		
-		nbrselection.select(".piece-path").attr("d", function(d) {return pathSpecification(d, -1);});
-		nbrselection.select(".piece-inner").attr("transform", "rotate("+(nbrdata.o*60)+")");
-		
-		storePuzzle();
-	}
-	
-	d3.select(this).select(".piece-path").attr("d", function(d) {return pathSpecification(d, -1);});
-	d3.select(this).select(".piece-inner").attr("transform", "rotate("+(data.o*60)+")");
+	updateDrawnPieces();
+
 }
 
 function findt(d, signature)
@@ -557,15 +534,21 @@ function createPiece(d)
 		.attr("id", rawid(d))
 		.attr("transform", "translate("+p2cstring(2*d.q, 0, 2*d.r, -60)+")")
 		.append("g")
-		.classed("piece-inner", true)
-		.attr("transform", "rotate("+(d.o*60)+")");
+		.classed("piece-inner", true);
 	piece.append("circle")
 		.classed("piece-background", true)
 		.attr("cx", "0")
 		.attr("cy", "0")
 		.attr("r", "1");
 	var path = piece.append("path")
-		.classed("piece-path", true)
+		.classed("piece-path", true);
+}
+
+function drawPiece(d)
+{
+	d3.select(this).select(".piece-inner")
+		.attr("transform", "rotate("+(d.o*60)+")");
+	d3.select(this).select(".piece-path")
 		.attr("d", function(d) {return pathSpecification(d, -1);});
 }
 
@@ -746,17 +729,60 @@ function newPieceAt(xycoord)
 	storePuzzle()
 }
 
+// create or delete a connection between piece with data d and its neighbor in
+// direction i.  If that neighbor does not exist, this function has no effect.
+function writeConnection(d, i, create)
+{
+	var nbrs = nbrsOf(d);
+	var nbr, nbrdata, nbrselection;
+	nbr = nbrs[i];
+	nbrselection = board.select(id(nbr));
+	if (nbrselection.empty())
+		return;
+	nbrdata = nbrselection.datum();
+		
+	var sig = pieceSignature[d.t];
+	var newsig = [];
+	for (var j = 0; j<6; j++)
+		newsig.push(sig[b2p(d,j)]);
+	newsig[i] = create;
+	findt(d, newsig);
+	
+	sig = pieceSignature[nbrdata.t];
+	newsig = []
+	for (var j = 0; j<6; j++)
+		newsig.push(sig[b2p(nbrdata,j)]);
+	newsig[(i+3)%6] = create;
+	findt(nbrdata, newsig);
+}
+
+// takes a direction relative to an oriented piece and returns the direction,
+// relative to the board
+function p2b(d, i) { return (i+6-d.o)%6; }
+
+// takes a direction relative to the board and returns the direction, relative
+// to an oriented piece
+function b2p(d, i) { return (i+d.o)%6; }
+
 function deletePiece(d)
 {
-	var index = pieces.indexOf(d)
+	var index = pieces.indexOf(d);
 	if (index != -1)
 	{
+		var sig = pieceSignature[d.t];
+		var nbrsig, newnbrsig;
+		var nbrs = nbrsOf(d);
+		for (var i = 0; i<6; i++) // the direction on the board
+		{
+			if (sig[b2p(d,i)])
+				writeConnection(d,i,false);
+		}
+		
 		pieces.splice(index,1);
 		updateDrawnPieces();
 		storePuzzle();
 	}
 	d3.event.preventDefault();
-	// FIX ME: delete incident connections first!
 }
 
 function storageAvailable(type)
