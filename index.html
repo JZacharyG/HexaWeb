@@ -247,7 +247,8 @@ if (storageAvailable("localStorage"))
 		val = storage.getItem(puzzle.id);
 		if (val != null)
 			puzzle.pieces = JSON.parse(val);
-		puzzle.seen = (val != null);
+		else
+			puzzle.pieces.forEach(function (d) {d.o = Math.floor(6*Math.random());});
 	}
 	
 	val = storage.getItem("customPuzzleID");
@@ -257,7 +258,7 @@ if (storageAvailable("localStorage"))
 	{
 		val = storage.getItem(i);
 		if (val != null)
-			puzzles.push({id:i, pieces:JSON.parse(val), seen:true});
+			puzzles.push({id:i, pieces:JSON.parse(val)});
 	}
 	
 	val = storage.getItem("currentPuzzleID");
@@ -295,7 +296,7 @@ if (storageAvailable("localStorage"))
 				puzzles.splice(index,1);
 				if (puzzleIndex == index)
 				{
-					puzzleIndex = min(puzzleIndex, puzzles.length-1);
+					puzzleIndex = Math.min(puzzleIndex, puzzles.length-1);
 					loadPuzzle();
 				}
 				else if (puzzleIndex > index)
@@ -311,11 +312,14 @@ if (storageAvailable("localStorage"))
 				{
 					pieces = puzzles[puzzleIndex].pieces;
 					updateDrawnPieces();
+					setEditMode(false);
 				}
 			}
 		}
 	};
 }
+else
+	puzzles.forEach(function(p) {p.pieces.forEach(function(d) {d.o = Math.floor(6*Math.random());});});
 
 function loadPuzzle()
 {
@@ -327,12 +331,7 @@ function loadPuzzle()
 		storage.setItem("currentPuzzleID", puzzles[puzzleIndex].id);
 	
 	pieces = puzzles[puzzleIndex].pieces;
-	if (!puzzles[puzzleIndex].seen)
-		scramble();
 	updateDrawnPieces();
-	if (!puzzles[puzzleIndex].seen)
-		scramble();
-	puzzles[puzzleIndex].seen = true;
 	
 	setEditMode(false);
 	onChange();
