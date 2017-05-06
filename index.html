@@ -269,6 +269,52 @@ if (storageAvailable("localStorage"))
 			break;
 		}
 	}
+	
+	window.onstorage = function (e)
+	{
+		var id = Number(e.key);
+		if (isNaN(id))
+			return;
+		for (var index = puzzles.length-1; index >= 0 && puzzles[index].id != id; index--);
+		if (index == -1)
+		{
+			if (id < 0)
+			{
+				for (index = puzzles.length; index > 0 && puzzles[index-1].id < id; index--);
+				puzzles.splice(index,0,{id:id, pieces: JSON.parse(e.newValue)});
+				if (puzzleIndex >= index)
+					puzzleIndex++;
+				prevButton.classed("enabled", puzzleIndex > 0);
+				nextButton.classed("enabled", puzzleIndex < (puzzles.length - 1));
+			}
+		}
+		else
+		{
+			if (e.newValue == null)
+			{
+				puzzles.splice(index,1);
+				if (puzzleIndex == index)
+				{
+					puzzleIndex = min(puzzleIndex, puzzles.length-1);
+					loadPuzzle();
+				}
+				else if (puzzleIndex > index)
+					puzzleIndex--;
+				
+				prevButton.classed("enabled", puzzleIndex > 0);
+				nextButton.classed("enabled", puzzleIndex < (puzzles.length - 1));
+			}
+			else
+			{
+				puzzles[index].pieces = JSON.parse(e.newValue);
+				if (puzzleIndex == index)
+				{
+					pieces = puzzles[puzzleIndex].pieces;
+					updateDrawnPieces();
+				}
+			}
+		}
+	};
 }
 
 function loadPuzzle()
@@ -320,6 +366,15 @@ function newPuzzle()
 {
 	if (!newButton.classed("enabled"))
 		return;
+	if (storage != null)
+	{
+		var val = storage.getItem("customPuzzleID");
+		if (val != null)
+		{
+			customID = Number(val);
+			console.log(customID);
+		}
+	}
 	puzzleIndex = puzzles.length;
 	puzzles.push({id:customID, pieces:[{r:0,q:0,t:0,o:0}]});
 	customID--;
@@ -337,7 +392,20 @@ function deletePuzzle()
 		storage.removeItem(puzzles[puzzleIndex].id);
 	puzzles.splice(puzzleIndex,1);
 	puzzleIndex = Math.min(puzzleIndex, puzzles.length-1);
+	
 	loadPuzzle();
+	if (storage != null)
+	{
+		var val = storage.getItem("customPuzzleID");
+		if (val != null)
+		{
+			customID = Number(val);
+			// reduce the customID as far as possible, so that it doesn't get bloated if we make a ton of custom puzzles and then delete them.
+			while (customID < -1 && storage.getItem(String(customID+1)) == null)
+				customID++;
+		}
+		storage.setItem("customPuzzleID", customID);
+	}
 }
 
 function updateDrawnPieces()
